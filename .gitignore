@@ -1,0 +1,42 @@
+# ---- data (never commit NSD/COCO data or derived arrays) ----
+data/*
+!data/.gitkeep
+!data/README.md
+*.hdf5
+*.h5
+*.nii
+*.nii.gz
+*.npy
+*.npz
+*.json
+!**/package.json
+nsd_cache/
+coco_cache/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# ---- outputs ----
+*.png
+!docs/*.png
+*.log
+runs/
+outputs/
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ---- os / editors ----
+.DS_Store
+.idea/
+.vscode/
