@@ -268,10 +268,10 @@ python -m brain2vision.compare_rois --subj 1 --color-targets color_targets.npy \
 ```
 
 Produces a grouped bar chart (early_v1v3 / v4_color / concept × 11 colors) with
-overall R² and top-1 in the legend — the clean ROI-comparison figure. Layout
-preview (values are synthetic here):
+overall R² and top-1 in the legend — the clean ROI-comparison figure. Real
+result, 4 subjects, matched to 687 voxels (see [`../REPORT.md`](../REPORT.md)):
 
-![roi comparison demo](roi_color_compare_example.png)
+![color decoding by ROI](../figures/fig1_color_by_roi.png)
 
 ### Multi-subject V4 (shared-subject model)
 
