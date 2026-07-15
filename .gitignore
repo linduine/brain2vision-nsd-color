@@ -20,6 +20,7 @@ coco_cache/
 # ---- outputs ----
 *.png
 !docs/*.png
+!figures/*.png    # keep committed result figures
 *.log
 runs/
 outputs/
@@ -40,5 +41,3 @@ env/
 .DS_Store
 .idea/
 .vscode/
-
-!figures/*.png

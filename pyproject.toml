@@ -36,7 +36,7 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-username/brain2vision-nsd"
+Homepage = "https://github.com/linduine/brain2vision-nsd-color"
 
 [tool.setuptools.packages.find]
 include = ["brain2vision*"]

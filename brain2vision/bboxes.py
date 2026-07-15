@@ -1,5 +1,5 @@
 """
-build_coco_bboxes.py
+bboxes.py
 ====================
 Link each NSD image to its COCO object annotations and express every bounding
 box in the NSD STIMULUS FRAME -- i.e. the 425x425 center-cropped+resized image
@@ -27,8 +27,8 @@ MindEye2 hdf5 files and nsd_stimuli.hdf5). Each value is a list of boxes:
 Usage
 -----
     pip install pandas numpy requests
-    python build_coco_bboxes.py --out nsd_bboxes.json            # all 73k
-    python build_coco_bboxes.py --nsd-ids 0 1 2 3 --out demo.json
+    python -m brain2vision.bboxes --out nsd_bboxes.json            # all 73k
+    python -m brain2vision.bboxes --nsd-ids 0 1 2 3 --out demo.json
 
 NOTE: cropBox is interpreted as (top, bottom, left, right) fractions removed
 from each side (NSD manual convention). Sanity-check a few boxes visually

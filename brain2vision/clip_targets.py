@@ -1,5 +1,5 @@
 """
-compute_clip_embeddings.py
+clip_targets.py
 ==========================
 Compute CLIP embeddings for the NSD images -- the targets your fMRI decoder
 predicts (MindEye-style fMRI -> CLIP).
@@ -28,14 +28,14 @@ Usage
 -----
     pip install open_clip_torch torch h5py numpy pillow
     # image embeddings, default model, subset for a smoke test
-    python compute_clip_embeddings.py --images coco_images_224_float16.hdf5 \
+    python -m brain2vision.clip_targets --images coco_images_224_float16.hdf5 \
         --nsd-ids 0 1 2 3 --out clip_vitL_img.npy
     # MindEye2 target
-    python compute_clip_embeddings.py --images coco_images_224_float16.hdf5 \
+    python -m brain2vision.clip_targets --images coco_images_224_float16.hdf5 \
         --model ViT-bigG-14 --pretrained laion2b_s39b_b160k --tokens \
         --out clip_bigG_tokens.npy
     # caption/text embeddings (needs COCO captions json, see build_coco_bboxes)
-    python compute_clip_embeddings.py --captions captions_by_nsdid.json \
+    python -m brain2vision.clip_targets --captions captions_by_nsdid.json \
         --out clip_vitL_text.npy
 """
 

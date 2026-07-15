@@ -1,5 +1,5 @@
 """
-extract_color_targets.py
+color_targets.py
 ========================
 Build the COLOR target vectors for the "which colors is the subject seeing?"
 experiment. For each NSD image we compute an interpretable 11-way basic-color
@@ -22,7 +22,7 @@ you want perceptual accuracy.
 Usage
 -----
     pip install h5py numpy
-    python extract_color_targets.py --images coco_images_224_float16.hdf5 \
+    python -m brain2vision.color_targets --images coco_images_224_float16.hdf5 \
         --out color_targets.npy
 Outputs color_targets.npy (n_images, 11) and color_targets_ids.npy (NSD ids),
 plus prints the color order.
@@ -31,7 +31,7 @@ plus prints the color order.
 import argparse
 import numpy as np
 # h5py is imported lazily inside run() so the color functions below can be
-# reused (e.g. by train_v4_color.py) without requiring h5py.
+# reused (e.g. by color_decode.py) without requiring h5py.
 
 COLOR_NAMES = ["red", "orange", "yellow", "green", "blue",
                "purple", "pink", "brown", "black", "white", "gray"]

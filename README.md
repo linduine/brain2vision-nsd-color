@@ -36,8 +36,8 @@ report walks through each, because which comparison you run changes the answer.
 ## Install
 
 ```bash
-git clone https://github.com/your-username/brain2vision-nsd
-cd brain2vision-nsd
+git clone https://github.com/linduine/brain2vision-nsd-color
+cd brain2vision-nsd-color
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[color]"     # core + color experiment deps
 # other extras: ".[clip]"  ".[rawnsd]"  ".[all]"
@@ -53,32 +53,34 @@ python download_data.py --subjects 1          # small files + one subject's beta
 # optional images for targets: add --images  (~22 GB)
 ```
 
-## Quickstart: decode color from V4
+## Quickstart: reproduce the color/luminance comparison
 
 ```bash
 # 1) inspect available ROIs (optional)
 python -m brain2vision.inspect_rois
 
-# 2) build color targets from the images
-python -m brain2vision.color_targets --images data/coco_images_224_float16.hdf5 \
-    --out data/color_targets.npy
+# 2) build the targets from the images
+python -m brain2vision.color_targets     --images data/coco_images_224_float16.hdf5 --out data/color_targets.npy
+python -m brain2vision.luminance_targets --images data/coco_images_224_float16.hdf5 --out data/luminance_targets.npy
 
-# 3) single-subject V4 -> color
-python -m brain2vision.color_decode --subj 1 \
-    --color-targets data/color_targets.npy --model ridge
+# 3) single-subject decode (default ROI = V4; RidgeCV-tuned)
+python -m brain2vision.color_decode --subj 1 --color-targets data/color_targets.npy
 
-# 4) compare ROIs (early / V4 / concept) -> figure
-python -m brain2vision.compare_rois --subj 1 \
-    --color-targets data/color_targets.npy --out roi_color_compare.png
-
-# 5) shared-subject V4 model (pools subjects 1,2,5,7)
-python -m brain2vision.color_shared_subject \
-    --color-targets data/color_targets.npy --subjects 1 2 5 7
+# 4) the real comparison: voxel-matched, across subjects (color, then luminance)
+python -m brain2vision.replicate_subjects --subjects 1 2 5 7 \
+    --target data/color_targets.npy --out roi_color_4subj.png
+python -m brain2vision.replicate_subjects --subjects 1 2 5 7 \
+    --target data/luminance_targets.npy --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 \
+    --out roi_luminance_4subj.png
 ```
 
-Example comparison figure (values synthetic — layout only):
+Result (4 subjects, matched to 687 voxels — see [`REPORT.md`](REPORT.md)):
 
-![ROI color comparison](docs/roi_color_compare_example.png)
+![color decoding by ROI](figures/fig1_color_by_roi.png)
+
+`compare_rois` runs the matched comparison for a single subject, and
+`color_shared_subject` is an alternative pooling model (per-subject projection →
+shared readout). See [`docs/methods.md`](docs/methods.md) for all options.
 
 ## Other targets
 

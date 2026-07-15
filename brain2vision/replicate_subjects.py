@@ -63,10 +63,14 @@ def main():
 
     labels = args.labels.split(",") if args.labels else COLOR_NAMES
 
-    sizes = {s: int(load_roi_masks(args.subjects[0], f).sum())
-             for s, f in ROI_SETS.items()}
-    k = args.match_voxels or min(sizes.values())
-    print(f"sizes {sizes} -> match k = {k}")
+    # Match to the smallest ROI available in ANY included subject, so every
+    # subject/ROI is subsampled to the same k (V4 sizes vary across subjects).
+    per_subj_min = {}
+    for subj in args.subjects:
+        s_sizes = {s: int(load_roi_masks(subj, f).sum()) for s, f in ROI_SETS.items()}
+        per_subj_min[subj] = min(s_sizes.values())
+    k = args.match_voxels or min(per_subj_min.values())
+    print(f"smallest ROI per subject {per_subj_min} -> match k = {k}")
 
     agg = {s: {"per": [], "ov": [], "t1": []} for s in ROI_SETS}
     for subj in args.subjects:

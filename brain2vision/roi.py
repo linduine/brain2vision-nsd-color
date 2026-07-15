@@ -1,5 +1,5 @@
 """
-nsd_roi_loader.py
+roi.py
 -----------------
 Load NSD single-trial betas for ONE subject, restricted to specific ROI(s),
 from the MindEye2 Hugging Face release (pscotti/mindeyev2).
@@ -27,7 +27,7 @@ volume yourself. Heavier download, full flexibility. See notes in README.
 
 Usage
 -----
-    python nsd_roi_loader.py --subj 1 --rois V1 V2 --preview
+    python -m brain2vision.roi --subj 1 --rois V1 V2 --preview
 
 Run inspect_roi_masks.py first to see the exact region names available.
 """

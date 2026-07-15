@@ -1,16 +1,17 @@
 """
-train_v4_color.py
+color_decode.py
 =================
-First experiment: predict the COLOR content of the seen image from V4 betas.
+Decode an image target (color distribution, luminance distribution, ...) from a
+chosen ROI's single-trial betas, and evaluate on held-out images.
 
 Pipeline
 --------
-  V4 betas (per trial)  --ridge/MLP-->  11-way basic-color distribution
-                                        (from extract_color_targets.py)
+  ROI betas (per trial)  --RidgeCV/MLP-->  target distribution
+                                           (e.g. color_targets.py, luminance_targets.py)
 
-V4 is the natural ROI for this: it is strongly color-selective. We predict the
-soft color histogram (red/orange/.../white/gray) and evaluate how well V4
-activity tracks the colors present.
+The ROI defaults to V4 but is configurable (`rois=`). For a fair comparison
+across ROIs of different sizes, see compare_rois.py / replicate_subjects.py,
+which match voxel counts. The decoder itself is target-agnostic via `labels=`.
 
 Data alignment (IMPORTANT)
 --------------------------
@@ -36,15 +37,13 @@ held-out protocol and avoids image leakage between train and test.
 Usage
 -----
     pip install scikit-learn h5py numpy huggingface_hub
-    # 1) make color targets first (see extract_color_targets.py)
+    # 1) make color targets first (see color_targets.py)
     # 2) train (auto-downloads betas, masks, behav, shared1000)
-    python train_v4_color.py --subj 1 --color-targets color_targets.npy \
+    python -m brain2vision.color_decode --subj 1 --color-targets color_targets.npy \
         --model ridge
 """
 
-import os
 import io
-import glob
 import tarfile
 import argparse
 import numpy as np
@@ -104,7 +103,7 @@ def read_behav_alignment(subj, cache_dir=None):
 
 
 # --------------------------------------------------------------------------- #
-# Assemble X (V4 betas) and y (color targets)
+# Assemble X (ROI betas) and y (target)
 # --------------------------------------------------------------------------- #
 def build_xy(subj, color_targets_npy, rois=("V4",), ids_npy=None, betas_npy=None):
     color = np.load(color_targets_npy)

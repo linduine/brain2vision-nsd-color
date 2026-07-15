@@ -1,17 +1,17 @@
 """
-visualize_bbox.py
+visualize.py
 =================
 Sanity-check the COCO -> NSD-stimulus-frame bounding boxes produced by
-build_coco_bboxes.py by drawing them on the actual stimulus image.
+bboxes.py by drawing them on the actual stimulus image.
 
 If the boxes line up with the objects, the cropBox transform is correct. If
 they're shifted/scaled, the cropBox convention needs flipping (see notes in
-build_coco_bboxes.py).
+bboxes.py).
 
 Usage
 -----
     pip install h5py numpy pillow
-    python visualize_bbox.py --images coco_images_224_float16.hdf5 \
+    python -m brain2vision.visualize --images coco_images_224_float16.hdf5 \
         --bboxes nsd_bboxes.json --nsd-id 3 --out check_3.png
 """
 
@@ -60,7 +60,7 @@ def visualize(h5path, bbox_json, nsd_id, out):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--images", required=True, help="HDF5 of NSD images")
-    p.add_argument("--bboxes", required=True, help="JSON from build_coco_bboxes.py")
+    p.add_argument("--bboxes", required=True, help="JSON from bboxes.py")
     p.add_argument("--nsd-id", type=int, required=True)
     p.add_argument("--out", default="bbox_check.png")
     args = p.parse_args()

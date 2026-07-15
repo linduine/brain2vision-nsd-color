@@ -13,9 +13,11 @@ clip_targets         CLIP image/text embedding targets
 bboxes               COCO bounding boxes in the NSD stimulus frame
 visualize            draw bounding boxes on a stimulus image
 color_targets        11-way basic-color distribution per image
-color_decode         single-subject V4 -> color decoder
-compare_rois         color decoding across ROI sets + plot
-color_shared_subject shared-subject V4 -> color decoder (torch)
+luminance_targets    11-bin brightness distribution per image
+color_decode         decode a target from an ROI + evaluate (single subject)
+compare_rois         voxel-matched ROI comparison + plot (one subject)
+replicate_subjects   voxel-matched comparison across subjects (any target)
+color_shared_subject shared-subject V4 model (per-subject projection, torch)
 """
 
 __version__ = "0.1.0"

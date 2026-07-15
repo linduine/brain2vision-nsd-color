@@ -4,7 +4,7 @@ inspect_roi_masks.py
 Download the small brain_region_masks.hdf5 (~0.8 MB) from the MindEye2 NSD
 release and print every ROI/region available per subject, with voxel counts.
 
-Run this ONCE before using nsd_roi_loader.py so you know which region names to
+Run this ONCE before using roi.py so you know which region names to
 request. Nothing large is downloaded here.
 
 The betas in this release are stored per subject as a single FLATTENED array of

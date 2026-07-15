@@ -1,5 +1,5 @@
 """
-train_v4_color_multisubject.py
+color_shared_subject.py
 =============================
 Shared-subject V4 -> color decoder. V4 is small per subject (~600-800 voxels),
 so we pool subjects: each subject gets its OWN linear projection from its V4
@@ -18,12 +18,12 @@ must learn a subject-invariant mapping from the common latent to colors.
 Subjects: 1, 2, 5, 7 by default (the four with all 40 sessions).
 Split: per subject, test = shared-1000 images, train = the rest.
 
-Reuses build_xy() from train_v4_color.py for per-subject aligned (X, y, is_test).
+Reuses build_xy() from color_decode.py for per-subject aligned (X, y, is_test).
 
 Usage
 -----
     pip install torch scikit-learn h5py numpy huggingface_hub
-    python train_v4_color_multisubject.py --color-targets color_targets.npy \
+    python -m brain2vision.color_shared_subject --color-targets color_targets.npy \
         --subjects 1 2 5 7 --latent 512 --epochs 30
 """
 
