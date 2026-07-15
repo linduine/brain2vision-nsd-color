@@ -204,9 +204,9 @@ step 3.
 python -m brain2vision.compare_rois --subj 1 --color-targets data/color_targets.npy --n-draws 10
 
 # across subjects, matched — color, then luminance (any target via --target/--labels)
-python -m brain2vision.replicate_subjects --subjects 1 2 5 7 --target data/color_targets.npy --out roi_color_4subj.png
-python -m brain2vision.replicate_subjects --subjects 1 2 5 7 --target data/luminance_targets.npy \
-    --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 --out roi_luminance_4subj.png
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 --target data/color_targets.npy --out roi_color_8subj.png
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 --target data/luminance_targets.npy \
+    --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 --out roi_luminance_8subj.png
 ```
 
 Each ROI is matched to 687 voxels; `replicate_subjects` reports per-subject and
@@ -214,7 +214,7 @@ across-subject (mean ± SEM) R²/top-1 and saves a figure plus a `_summary.npy`.
 
 ### Result
 
-The clean, replicated finding (4 subjects, matched to 687 voxels):
+The clean, replicated finding (all 8 subjects, matched to 687 voxels):
 
 ![color decoding by ROI](../figures/fig1_color_by_roi.png)
 

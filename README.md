@@ -16,7 +16,7 @@ see [`DATA_TERMS.md`](DATA_TERMS.md).
 
 Full write-up with methods and figures: **[`REPORT.md`](REPORT.md)**.
 
-Short version — a replicated (n=4 subjects), confound-controlled functional
+Short version — a replicated (all 8 subjects), confound-controlled functional
 dissociation in how visual cortex represents color vs brightness:
 
 ![color vs luminance dissociation](figures/fig3_dissociation.png)
@@ -49,7 +49,7 @@ By downloading you accept the NSD and COCO terms (see `DATA_TERMS.md`).
 
 ```bash
 python download_data.py --subjects 1          # small files + one subject's betas
-# later: python download_data.py --subjects 1 2 5 7
+# later: python download_data.py --subjects 1 2 3 4 5 6 7 8
 # optional images for targets: add --images  (~22 GB)
 ```
 
@@ -66,15 +66,15 @@ python -m brain2vision.luminance_targets --images data/coco_images_224_float16.h
 # 3) single-subject decode (default ROI = V4; RidgeCV-tuned)
 python -m brain2vision.color_decode --subj 1 --color-targets data/color_targets.npy
 
-# 4) the real comparison: voxel-matched, across subjects (color, then luminance)
-python -m brain2vision.replicate_subjects --subjects 1 2 5 7 \
-    --target data/color_targets.npy --out roi_color_4subj.png
-python -m brain2vision.replicate_subjects --subjects 1 2 5 7 \
+# 4) the real comparison: voxel-matched, across all 8 subjects (color, then luminance)
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
+    --target data/color_targets.npy --out roi_color_8subj.png
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
     --target data/luminance_targets.npy --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 \
-    --out roi_luminance_4subj.png
+    --out roi_luminance_8subj.png
 ```
 
-Result (4 subjects, matched to 687 voxels — see [`REPORT.md`](REPORT.md)):
+Result (8 subjects, matched to 687 voxels — see [`REPORT.md`](REPORT.md)):
 
 ![color decoding by ROI](figures/fig1_color_by_roi.png)
 

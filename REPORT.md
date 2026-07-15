@@ -24,7 +24,9 @@ The most compact summary is one figure:
 
 Higher visual cortex (`concept`) is strongly color-biased; early visual
 (`early_v1v3`) is balanced across color and luminance; V4 is color-biased but
-weak on both raw measures. All effects replicate across four subjects.
+weak on both raw measures. All effects replicate across **all 8 NSD subjects**,
+and both directions of the dissociation are statistically reliable (the SEM bars
+don't overlap where it counts).
 
 ## Background
 
@@ -77,8 +79,10 @@ ROI to the smallest one's size (V4's 687), decode, and average over 10 random
 draws. Only after this is the comparison about color information *per unit of
 cortex*.
 
-**4. Replication.** I repeated the matched analysis across the four subjects who
-completed all 40 sessions (1, 2, 5, 7) and summarized as mean ± SEM.
+**4. Replication.** I repeated the matched analysis across subjects — first the
+four who completed all 40 sessions (1, 2, 5, 7), then all 8 (adding the
+reduced-session subjects 3, 4, 6, 8) — and summarized as mean ± SEM. The pattern
+held, and the added subjects tightened the error bars.
 
 **5. A luminance control.** The color results hinted that early visual's strength
 was really *luminance* (it decoded "black" far better than any other region). So I
@@ -92,45 +96,53 @@ it.)
 
 ## Results
 
-### Color, matched and replicated (n = 4)
+All numbers below are across **all 8 NSD subjects** (mean ± SEM), each ROI
+subsampled to 687 voxels with alpha tuned per fit. Adding the four
+reduced-session subjects (3, 4, 6, 8) to the four complete ones lowers the
+absolute R² a little and tightens the error bars — the pattern is unchanged.
+
+### Color, matched and replicated (n = 8)
 
 | ROI | overall R² | top-1 |
 |---|---|---|
-| concept (higher visual) | **0.059 ± 0.007** | 0.256 ± 0.008 |
-| early_v1v3 | 0.038 ± 0.008 | 0.258 ± 0.009 |
-| v4_color | 0.035 ± 0.009 | 0.240 ± 0.009 |
+| concept (higher visual) | **0.044 ± 0.004** | 0.237 ± 0.004 |
+| early_v1v3 | 0.032 ± 0.004 | 0.247 ± 0.004 |
+| v4_color | 0.029 ± 0.004 | 0.233 ± 0.004 |
 
-All ROIs decode the dominant color at ~0.25–0.26 vs 0.091 chance (~2.8×). With
+All ROIs decode the dominant color well above the 0.091 chance baseline. With
 size and regularization controlled, **higher visual cortex decodes color best** —
-a reliable gap across subjects.
+a gap that is reliable across the full cohort (0.044 vs 0.032, well beyond the
+combined SEM).
 
 ![color by ROI](figures/fig1_color_by_roi.png)
 
 The per-color pattern is the interesting part. Higher visual cortex leads on the
-chromatic, object-bound colors (brown 0.16, blue 0.13, green 0.09, orange 0.08).
-Early visual is the standout for **black** (0.113 vs V4's 0.026) and ties for
-white — the luminance extremes. Rare colors (purple, pink) are unreliable
-everywhere: too few training examples.
+chromatic, object-bound colors (brown 0.13, blue 0.10, orange 0.07, green 0.06).
+Early visual is the standout for **black** (0.080 vs V4's 0.002 — essentially
+zero) and leads on white too — the luminance extremes. Rare colors (purple, pink)
+are unreliable everywhere: too few training examples.
 
-### Luminance: the dissociation (n = 4)
+### Luminance: the dissociation (n = 8)
 
 | ROI | overall luminance R² |
 |---|---|
-| early_v1v3 | **0.036 ± 0.007** |
-| concept | 0.028 ± 0.004 |
-| v4_color | 0.017 ± 0.005 |
+| early_v1v3 | **0.029 ± 0.003** |
+| concept | 0.016 ± 0.002 |
+| v4_color | 0.012 ± 0.003 |
 
-For brightness the order **flips**: early visual leads and V4 drops to last
-(early reliably beats V4). And within each region, the contrast is the real story:
-higher visual and V4 are ~2× color-biased (they care about chromatic color far
-more than brightness), while **early visual is balanced** across the two.
+For brightness the order **flips**: early visual leads, V4 drops to last, and at
+n = 8 early's lead over higher visual is now reliable (0.029 vs 0.016, ~3.6× the
+combined SEM — it was only marginal at n = 4). Within each region, the contrast
+is the real story: higher visual and V4 are ~2× color-biased (they care about
+chromatic color far more than brightness), while **early visual is balanced**
+across the two.
 
 ![luminance by ROI](figures/fig2_luminance_by_roi.png)
 
 The luminance signal is concentrated in the **dark bins** (L0–L2), where early
-visual dominates (L1 = 0.123, the single strongest luminance value anywhere) and
-V4 is near zero (L0 = 0.011). This corroborates the "black" color result from an
-independent target.
+visual dominates (L1 = 0.099, the single strongest luminance value anywhere) and
+V4 is near zero or negative (L0 = −0.006). This corroborates the "black" color
+result from an independent target.
 
 ## Interpretation
 
@@ -154,8 +166,9 @@ The pattern maps cleanly onto known visual neuroscience:
 - **Correlational.** "Decodable from region X" ≠ "represented or used by X."
 - **Raw-pixel targets.** Color/luminance histograms of the stimulus don't capture
   *perceptual* color (constancy, categories), which is likely where V4 would shine.
-- **Single dataset, n = 4.** Error bars are across subjects for the group claims
-  and across voxel draws for the matching; both are small, but this is one dataset.
+- **Single dataset.** Effects replicate across all 8 subjects (error bars are
+  across-subject SEM), but this is still one dataset with one preprocessing
+  pipeline; the effect sizes are modest (R² ~0.01–0.04).
 - **Rare colors unreliable.** Purple/pink have too few examples; their negative R²
   is a scarcity artifact, not signal.
 - **`concept` is a coarse pool.** `higher_vis` lumps all higher visual cortex; it
@@ -166,14 +179,14 @@ The pattern maps cleanly onto known visual neuroscience:
 
 ```bash
 pip install -e ".[color]"
-python download_data.py --subjects 1 2 5 7 --images
+python download_data.py --subjects 1 2 3 4 5 6 7 8 --images
 python -m brain2vision.color_targets --images data/coco_images_224_float16.hdf5 --out data/color_targets.npy
 python -m brain2vision.luminance_targets --images data/coco_images_224_float16.hdf5 --out data/luminance_targets.npy
-# color, matched + replicated across subjects
-python -m brain2vision.replicate_subjects --subjects 1 2 5 7 --target data/color_targets.npy --out roi_color_4subj.png
+# color, matched + replicated across all 8 subjects
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 --target data/color_targets.npy --out roi_color_8subj.png
 # luminance, same pipeline
-python -m brain2vision.replicate_subjects --subjects 1 2 5 7 --target data/luminance_targets.npy \
-    --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 --out roi_luminance_4subj.png
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 --target data/luminance_targets.npy \
+    --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 --out roi_luminance_8subj.png
 ```
 
 ## Data & credit
