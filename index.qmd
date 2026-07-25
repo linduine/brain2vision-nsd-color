@@ -2,7 +2,7 @@
 title: "Decoding Color and Luminance from Human Visual Cortex"
 subtitle: "A confound-controlled ROI decoding study on the Natural Scenes Dataset (7T fMRI)"
 author:
-  - name: Nina
+  - name: Nina Selezneva
     url: https://github.com/linduine
 date: last-modified
 abstract: |
@@ -44,8 +44,8 @@ within each region, `concept` and `v4_color` are ~2× color-biased, while
 
 Area V4 has long been described as the brain's "colour centre." The claim traces
 to Zeki's single-unit recordings in macaque prestriate cortex [@zeki1973], to
-human PET and fMRI localizers that isolated a ventral-occipital colour-responsive
-region (hV4 / V4α) [@lueck1989; @mckeefry1997; @bartels2000], and to the clinical
+human fMRI localizers that isolated a ventral-occipital colour-responsive region
+(hV4 / V4α) [@bartels2000], and to the clinical
 syndrome of *cerebral achromatopsia*, in which circumscribed ventral-occipital
 lesions abolish colour perception while sparing form and motion [@zeki1990].
 Later work complicates this tidy picture — colour is processed across a network,
@@ -208,9 +208,21 @@ The pattern maps cleanly onto known visual neuroscience:
   blue, foliage green, indoor scenes brown/gray), which it encodes. It is
   strongly biased toward chromatic over luminance information.
 - **V4** is chromatically biased (color > luminance, like higher visual) but weak
-  on raw pixel statistics — consistent with its role in *perceptual/constant*
-  color (a stable surface color across changing illumination) rather than reading
-  raw wavelength. The raw-pixel targets used here do not play to that specialty.
+  on raw pixel statistics. A plausible reading is that this reflects V4's role in
+  *color constancy* — recovering a stable surface color as the illuminant changes.
+  V4 lesions impair color constancy while leaving wavelength discrimination intact
+  [@wild1985], so V4 is thought to represent color after an illuminant-discounting
+  transform, not the raw wavelength hitting the retina. Our targets are histograms
+  of the stimulus's *raw pixels*, and because NSD images are shown under fixed
+  display conditions there is no illuminant variation to discount — so the target
+  is, by construction, the physical-wavelength signal. A region that encodes that
+  physical signal directly (early visual) predicts the target well; a region whose
+  representation is a nonlinear, constancy-adjusted transform of it (V4) is
+  encoding something only partially correlated with raw pixels, so a raw-pixel
+  decoder under-reads its contribution. In short, this design cannot dissociate
+  perceived from physical color, which is exactly where V4's putative advantage
+  would live — so the modest V4 result is uninformative about that advantage
+  rather than evidence against it.
 
 ### Caveats {#sec-caveats}
 
@@ -220,8 +232,29 @@ which do not capture perceptual color (constancy, categories), likely where V4
 would shine. Effects replicate across all 8 subjects but this is one dataset with
 one preprocessing pipeline, and effect sizes are modest (R² ≈ 0.01–0.04). The
 `concept` pool is coarse: `higher_vis` lumps all higher visual cortex and does
-not separate face/place/body/word regions (which requires raw-NSD ROI masks — the
-accompanying repository supports that path).
+not separate face/place/body/word regions — so "higher visual cortex decodes
+colour best" is a claim about a broad pool, not about any specific
+category-selective area.
+
+## Next steps {#sec-nextsteps}
+
+This study establishes the ROI-level dissociation; several follow-ups would
+sharpen it, and the repository *begins* the groundwork for the first.
+
+- **Split the `concept` pool into category-selective regions.** The natural next
+  question is *which* higher-visual region drives the colour advantage — e.g.
+  whether scene-selective cortex (PPA) carries the scene-colour signal. This
+  requires the finer raw-NSD ROI masks (FFA, PPA, EBA, VWFA, …). The
+  accompanying repository *starts* this path — a `raw_nsd` module extracts those
+  sub-regions from the raw volumetric betas — but the decoding analysis over them
+  is not yet done.
+- **Probe perceptual colour, not just pixel colour.** Targets that capture colour
+  constancy or colour *categories* (rather than raw-pixel histograms) would
+  actually test V4's putative specialty, which the present targets do not.
+- **Extend toward reconstruction.** Pairing the ROI betas with CLIP embedding
+  targets (a `clip_targets` module is included) — and adding a VAE-latent target
+  for the low-level pathway — would move from "what is decodable" toward "what can
+  be reconstructed."
 
 ## Reproducibility {#sec-reproduce}
 

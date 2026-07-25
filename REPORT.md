@@ -31,9 +31,9 @@ don't overlap where it counts).
 ## Motivation & hypotheses
 
 Area V4 has long been described as the brain's "colour centre" — from Zeki's
-macaque single-unit recordings (Zeki, 1973), to human PET and fMRI localizers
-that isolated a ventral-occipital colour region (hV4 / V4α; Lueck et al., 1989;
-McKeefry & Zeki, 1997; Bartels & Zeki, 2000), to cerebral achromatopsia, where
+macaque single-unit recordings (Zeki, 1973), to human fMRI localizers that
+isolated a ventral-occipital colour region (hV4 / V4α; Bartels & Zeki, 2000),
+to cerebral achromatopsia, where
 ventral-occipital lesions abolish colour perception while sparing form and motion
 (Zeki, 1990). Modern work is more nuanced — colour is processed across a network
 and V4's role is closer to *perceptual/constant* colour than raw wavelength (Roe
@@ -185,10 +185,18 @@ The pattern maps cleanly onto known visual neuroscience:
   blue, foliage green, indoor scenes brown/gray), which higher visual cortex
   encodes. It is strongly biased toward chromatic over luminance information.
 - **V4** is chromatically biased (color > luminance, like higher visual) but weak
-  on raw pixel statistics. This is consistent with V4's role in *perceptual/
-  constant* color — seeing a stable surface color across changing illumination —
-  rather than reading raw wavelength. My targets are raw-pixel color/luminance, so
-  they don't play to V4's actual specialty.
+  on raw pixel statistics. A plausible reading is *color constancy*: V4 lesions
+  impair constancy while leaving wavelength discrimination intact (Wild et al.,
+  1985), so V4 is thought to represent color *after* discounting the illuminant,
+  not the raw wavelength at the retina. My targets are histograms of the raw
+  pixels, and NSD images are shown under fixed display conditions — so the target
+  *is* the physical-wavelength signal, with no illuminant variation to discount.
+  A region encoding that physical signal directly (early visual) predicts it well;
+  a region whose code is a constancy-adjusted transform of it (V4) is only
+  partially correlated with raw pixels, so a raw-pixel decoder under-reads it. This
+  design simply cannot dissociate perceived from physical color — precisely where
+  V4's advantage would live — so the modest V4 result is uninformative about that
+  advantage, not evidence against it.
 
 ## Caveats
 
@@ -201,8 +209,24 @@ The pattern maps cleanly onto known visual neuroscience:
 - **Rare colors unreliable.** Purple/pink have too few examples; their negative R²
   is a scarcity artifact, not signal.
 - **`concept` is a coarse pool.** `higher_vis` lumps all higher visual cortex; it
-  does not separate face/place/body/word regions (that needs raw-NSD ROI masks,
-  which this repo also supports).
+  does not separate face/place/body/word regions, so "higher visual cortex decodes
+  color best" is a claim about a broad pool, not any specific category-selective
+  area.
+
+## Next steps
+
+This study establishes the ROI-level dissociation; the repository *begins* the
+groundwork for taking it further, but these analyses are not yet done:
+
+- **Split `concept` into category-selective regions** (FFA, PPA, EBA, VWFA, …) to
+  ask *which* higher-visual area drives the color advantage — e.g. whether
+  scene-selective cortex (PPA) carries the scene-color signal. The `raw_nsd`
+  module extracts these sub-regions from raw volumetric betas; the decoding over
+  them is the natural next experiment.
+- **Probe perceptual color** (constancy, color categories) rather than raw-pixel
+  histograms, which would actually test V4's putative specialty.
+- **Extend toward reconstruction** using the included `clip_targets` module (and
+  a VAE-latent target still to be added) for the low-level pathway.
 
 ## Reproduce
 

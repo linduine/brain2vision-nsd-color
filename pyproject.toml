@@ -9,7 +9,7 @@ description = "ROI-selective NSD brain-to-vision utilities and color-decoding ex
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Nina" }]
+authors = [{ name = "Nina Selezneva" }]
 keywords = ["fMRI", "NSD", "brain-decoding", "CLIP", "neuroscience"]
 
 # Core deps needed to load ROIs and build targets.
