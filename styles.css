@@ -1,0 +1,76 @@
+/* Clean academic / Distill-inspired styling for the report site */
+
+:root {
+  --b2v-accent: #2c5f8a;
+  --b2v-muted: #6b7280;
+}
+
+/* Readable measure and generous line height for body prose */
+.page-columns .content,
+main .content {
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+body {
+  color: #1f2328;
+}
+
+/* Title block: academic feel */
+#title-block-header .quarto-title .title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+#title-block-header .subtitle {
+  color: var(--b2v-muted);
+  font-weight: 400;
+}
+
+/* Abstract set apart like a journal article */
+.abstract {
+  background: #f7f9fb;
+  border-left: 3px solid var(--b2v-accent);
+  padding: 1rem 1.25rem;
+  border-radius: 4px;
+  font-size: 0.98rem;
+}
+
+/* Section headings */
+h1, h2, h3 {
+  color: #14243a;
+  letter-spacing: -0.01em;
+}
+h2 { border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3rem; margin-top: 2.2rem; }
+
+/* Figures: centered, subtle frame, small-caps caption */
+figure.quarto-figure img,
+.figure img,
+p > img {
+  max-width: 100%;
+  border: 1px solid #eceef1;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+figcaption, .figure-caption {
+  color: var(--b2v-muted);
+  font-size: 0.88rem;
+}
+
+/* Tables: tighter, academic */
+table {
+  font-size: 0.94rem;
+}
+thead th {
+  border-bottom: 2px solid #cbd5e1 !important;
+}
+
+/* Links */
+a { color: var(--b2v-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Callout tweak */
+.callout { border-radius: 6px; }
+
+/* Code blocks a touch smaller */
+pre code { font-size: 0.86rem; }

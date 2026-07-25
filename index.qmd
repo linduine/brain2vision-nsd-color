@@ -1,0 +1,222 @@
+---
+title: "Decoding Color and Luminance from Human Visual Cortex"
+subtitle: "A confound-controlled ROI decoding study on the Natural Scenes Dataset (7T fMRI)"
+author:
+  - name: Nina
+    url: https://github.com/linduine
+date: last-modified
+abstract: |
+  Which parts of visual cortex let you read out the colors a person is looking
+  at? Using 7T fMRI from the Natural Scenes Dataset and a linear decoder, and
+  after removing three confounds (per-ROI regularization, voxel-count, and a
+  trial-alignment data-hygiene issue), we find a functional dissociation that
+  replicates across all eight subjects: higher visual cortex decodes **color**
+  best, early visual cortex (V1–V3) uniquely decodes **luminance**, and area V4
+  — the textbook "color area" — shows no special advantage for *raw pixel* color.
+  Both directions of the dissociation are statistically reliable.
+bibliography: references.bib
+---
+
+## Executive summary {#sec-summary}
+
+Color is decodable above chance from all of visual cortex. Once the comparison
+is made fair — matching regularization *and* the number of voxels across regions
+— a clean, replicated functional dissociation emerges across all 8 NSD subjects
+(mean ± SEM):
+
+- **Color → higher visual cortex.** The `concept` pool (all higher visual cortex)
+  decodes the image's color distribution best (R² = 0.044 ± 0.004), because color
+  is bound to object and scene identity.
+- **Luminance → early visual cortex.** `early_v1v3` is the only region that
+  decodes brightness as well as it decodes color (luminance R² = 0.029 ± 0.003),
+  and it owns the dark/bright extremes.
+- **V4 is special at neither raw measure.** Despite its reputation as the color
+  area, V4 shows no advantage for raw-pixel color — consistent with its role in
+  *perceptual/constant* color rather than low-level color.
+
+The most compact statement of the result is a single figure (@fig-dissociation):
+within each region, `concept` and `v4_color` are ~2× color-biased, while
+`early_v1v3` is balanced across color and luminance.
+
+![Functional dissociation between color and luminance decoding, by ROI (all 8 subjects, each ROI matched to 687 voxels; error bars are across-subject SEM). Higher visual cortex is strongly color-biased; early visual cortex is balanced; V4 is color-biased but weak on both raw measures.](figures/fig3_dissociation.png){#fig-dissociation width=70%}
+
+## Dataset & baseline {#sec-dataset}
+
+The Natural Scenes Dataset [@allen2022nsd] is a large 7T fMRI dataset in which
+eight subjects each viewed ~9–10k natural images drawn from COCO [@lin2014coco]
+over 30–40 scanning sessions — the standard testbed for "brain-to-vision"
+decoding. We work from the preprocessed **MindEye2** release [@scotti2024mindeye2],
+which provides each subject's session-wise z-scored single-trial betas flattened
+to the `nsdgeneral` visual ROI (~13–16k voxels), paired with the seen images.
+
+Within `nsdgeneral`, the release labels a clean per-subject partition of voxels,
+from which we define three functional pools (@tbl-rois).
+
+| ROI key | region | voxels (subj 1) |
+|---|---|---:|
+| `early_v1v3` | early visual areas V1–V3 | 3,970 |
+| `v4_color` | area V4 | 687 |
+| `concept` | all higher visual cortex (`higher_vis`) | 11,067 |
+
+: The three ROIs. `early_vis` (= V1–V4) and `higher_vis` together tile
+`nsdgeneral`. {#tbl-rois}
+
+**Targets.** For each image we compute an interpretable 11-way *color* histogram
+(fraction of pixels in red / orange / yellow / green / blue / purple / pink /
+brown / black / white / gray) and, as an achromatic control, an 11-bin
+*luminance* histogram (dark → bright, standard luma weighting). The decoder
+predicts these soft distributions from voxel activity.
+
+**Decoder & split.** Ridge regression from z-scored voxels to the target
+distribution. The test set is the shared-1000 images (seen by all subjects and
+held out); training uses the rest, so there is no image leakage. We report
+overall and per-target R², and dominant-bin top-1 accuracy against the 1/11 ≈
+0.091 chance baseline.
+
+## Confounder removal {#sec-confounds}
+
+Comparing ROIs of very different sizes is a trap, and the "answer" changes
+completely at each step of cleaning it up. This section is the methodological
+core of the study.
+
+### ROI-specific regularization (RidgeCV) {#sec-ridge}
+
+A single ridge `alpha` for every ROI is unfair: it over-penalizes small ROIs and
+under-penalizes large ones. With a fixed `alpha`, higher visual cortex (11k
+voxels) *overfit* and scored **negative** test R² (−0.37), making it look like
+the worst region — an artifact, not biology. Tuning `alpha` per fit with
+`RidgeCV` (leave-one-out CV over a grid) fixes this; the selected `alpha` scales
+with ROI size (V4 ≈ 5.3k, early ≈ 15k, concept ≈ 43k), and all overfitting
+vanishes.
+
+### Voxel-count matching {#sec-matching}
+
+Even when properly regularized, a bigger ROI decodes better simply from having
+more voxels. To measure color information *per unit of cortex*, every ROI is
+subsampled to the smallest ROI's size (V4's **687 voxels**), decoded, and
+averaged over 10 random draws. Only after this does a ranking mean anything.
+
+### Trial-neighbor data hygiene {#sec-hygiene}
+
+The alignment between betas and images is stored in per-trial `behav` records.
+An early version of the reader accidentally also pulled in each trial's *neighbor*
+records (`past_`/`future_`/`old_behav`) — roughly 4× the data plus −1 padding —
+which inflated the trial count and slightly leaked information across the
+train/test split. Restricting to the current-trial record (and dropping padding)
+fixed it. Ranges are now sane: ~30k trials/subject, image ids in [0, 73000).
+
+### Replication {#sec-replication}
+
+The matched analysis was run first on the four subjects with all 40 sessions
+(1, 2, 5, 7), then extended to all eight (adding the reduced-session subjects
+3, 4, 6, 8), summarizing as mean ± SEM. The pattern held; the added subjects
+lowered the absolute R² a little and tightened the error bars.
+
+## Results & interpretation {#sec-results}
+
+### Color: higher visual cortex wins {#sec-color}
+
+Across all 8 subjects, with size and regularization controlled, higher visual
+cortex decodes color best (@tbl-color, @fig-color) — a gap reliable across the
+cohort (0.044 vs 0.032, well beyond the combined SEM).
+
+| ROI | overall R² | top-1 |
+|---|---:|---:|
+| `concept` (higher visual) | **0.044 ± 0.004** | 0.237 ± 0.004 |
+| `early_v1v3` | 0.032 ± 0.004 | 0.247 ± 0.004 |
+| `v4_color` | 0.029 ± 0.004 | 0.233 ± 0.004 |
+
+: Color decoding, all 8 subjects, matched to 687 voxels. Chance top-1 ≈ 0.091. {#tbl-color}
+
+![Per-color decoding R² by ROI (8 subjects, matched to 687 voxels; error bars = across-subject SEM). Higher visual cortex leads on chromatic, object-bound colors (brown, blue, green, orange); early visual cortex is the standout for black.](figures/fig1_color_by_roi.png){#fig-color}
+
+The per-color structure is the interesting part. Higher visual cortex leads on
+the chromatic, object-bound colors (brown 0.13, blue 0.10, orange 0.07, green
+0.06). Early visual cortex is the standout for **black** (0.080 vs V4's 0.002 —
+essentially zero) and leads on white too — the luminance extremes. Rare colors
+(purple, pink) are unreliable everywhere, having too few training examples; their
+negative R² is a scarcity artifact.
+
+### Luminance: early visual cortex wins {#sec-luminance}
+
+For brightness the ordering **flips** (@tbl-luminance, @fig-luminance): early
+visual leads, V4 drops to last, and at n = 8 early's lead over higher visual is
+now reliable (0.029 vs 0.016, ~3.6× the combined SEM — it was only marginal at
+n = 4).
+
+| ROI | overall luminance R² |
+|---|---:|
+| `early_v1v3` | **0.029 ± 0.003** |
+| `concept` | 0.016 ± 0.002 |
+| `v4_color` | 0.012 ± 0.003 |
+
+: Luminance decoding, all 8 subjects, matched to 687 voxels. {#tbl-luminance}
+
+![Per-brightness-bin decoding R² by ROI (L0 = dark → L10 = bright). The luminance signal is concentrated in the dark bins, where early visual dominates (L1 = 0.099, the single strongest value anywhere) and V4 is near zero or negative (L0 = −0.006).](figures/fig2_luminance_by_roi.png){#fig-luminance}
+
+### Interpretation {#sec-interpretation}
+
+The pattern maps cleanly onto known visual neuroscience:
+
+- **Early visual cortex (V1–V3)** represents low-level, retinotopic image
+  properties — luminance and local chromatic contrast — and decodes brightness
+  and color about equally. Its edge in the dark/black regime is a luminance
+  signature.
+- **Higher visual cortex** decodes color best not because it is chromatically
+  tuned *per se*, but because color correlates with *what's in the scene* (sky is
+  blue, foliage green, indoor scenes brown/gray), which it encodes. It is
+  strongly biased toward chromatic over luminance information.
+- **V4** is chromatically biased (color > luminance, like higher visual) but weak
+  on raw pixel statistics — consistent with its role in *perceptual/constant*
+  color (a stable surface color across changing illumination) rather than reading
+  raw wavelength. The raw-pixel targets used here do not play to that specialty.
+
+### Caveats {#sec-caveats}
+
+This is a correlational decoding result — "decodable from region X" is not
+"represented or used by X." The targets are raw-pixel color/luminance histograms,
+which do not capture perceptual color (constancy, categories), likely where V4
+would shine. Effects replicate across all 8 subjects but this is one dataset with
+one preprocessing pipeline, and effect sizes are modest (R² ≈ 0.01–0.04). The
+`concept` pool is coarse: `higher_vis` lumps all higher visual cortex and does
+not separate face/place/body/word regions (which requires raw-NSD ROI masks — the
+accompanying repository supports that path).
+
+## Reproducibility {#sec-reproduce}
+
+The full pipeline is packaged as the `brain2vision` Python package. By
+downloading the data you accept the NSD and COCO terms; nothing here redistributes
+the data.
+
+```bash
+# environment
+pip install -e ".[color]"
+
+# data (accepts NSD/COCO terms); ~1.5 GB/subject + ~22 GB images
+python download_data.py --subjects 1 2 3 4 5 6 7 8 --images
+
+# targets
+python -m brain2vision.color_targets     --images data/coco_images_224_float16.hdf5 --out data/color_targets.npy
+python -m brain2vision.luminance_targets  --images data/coco_images_224_float16.hdf5 --out data/luminance_targets.npy
+
+# the matched, replicated comparison — color, then luminance
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
+    --target data/color_targets.npy --out roi_color_8subj.png
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
+    --target data/luminance_targets.npy \
+    --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 --out roi_luminance_8subj.png
+```
+
+Full method notes and module reference are in
+[`docs/methods.md`](https://github.com/linduine/brain2vision-nsd-color/blob/main/docs/methods.md).
+
+## Data & credit {#sec-credit}
+
+Code is MIT-licensed; the data is **not** — NSD and COCO carry their own terms
+(see `DATA_TERMS.md` in the repository). Please cite the Natural Scenes Dataset
+[@allen2022nsd], COCO [@lin2014coco], and MindEye2 [@scotti2024mindeye2].
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

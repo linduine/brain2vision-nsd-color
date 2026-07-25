@@ -37,6 +37,10 @@ venv/
 env/
 .ipynb_checkpoints/
 
+# ---- quarto build artifacts ----
+/_site/
+/.quarto/
+
 # ---- os / editors ----
 .DS_Store
 .idea/

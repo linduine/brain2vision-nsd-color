@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Decoding Color & Luminance from Human Visual Cortex"
+  description: "A confound-controlled ROI decoding study on the Natural Scenes Dataset (7T fMRI)."
+  site-url: "https://linduine.github.io/brain2vision-nsd-color/"
+  repo-url: "https://github.com/linduine/brain2vision-nsd-color"
+  repo-actions: [edit, issue]
+  navbar:
+    right:
+      - icon: github
+        href: "https://github.com/linduine/brain2vision-nsd-color"
+        aria-label: GitHub repository
+  page-footer:
+    center: "Code MIT-licensed · data under NSD/COCO terms · built with Quarto"
+
+bibliography: references.bib
+csl: null
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    code-summary: "Show Code"
+    code-tools: true
+    fig-cap-location: bottom
+    link-external-newwindow: true
+    smooth-scroll: true
