@@ -130,16 +130,6 @@ brain2vision-nsd/
 Full method notes, ROI structure, alignment caveats, and extension ideas are in
 [`docs/methods.md`](docs/methods.md).
 
-## Two things to verify on first run
-
-1. **Bounding-box crop convention.** Boxes are transformed with NSD's `cropBox`
-   assumed `(top, bottom, left, right)`. Run `brain2vision.visualize` and confirm
-   boxes hug the objects before trusting at scale.
-2. **Betas↔image alignment.** MindEye2 betas aren't in image order; the color
-   decoder recovers each trial's image id / betas row from the webdataset
-   `behav` arrays (default columns `0` and `5`). The script prints the id/row
-   ranges — check them once.
-
 ## Citation
 
 If you use this, please cite NSD (Allen et al., 2022), COCO (Lin et al., 2014),
