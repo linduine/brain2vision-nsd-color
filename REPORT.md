@@ -104,9 +104,12 @@ concept → 43k), all overfitting vanished, and now higher visual cortex looked
 
 **3. Bigger ROIs win just by having more voxels.** More voxels = more signal,
 regardless of per-voxel selectivity. So I **matched voxel count**: subsample every
-ROI to the smallest one's size (V4's 687), decode, and average over 10 random
-draws. Only after this is the comparison about color information *per unit of
-cortex*.
+ROI to the smallest V4 across subjects (397 voxels, set by subject 7 — V4 ranges
+from 397 to 687 across the eight), decode, and average over repeated random draws
+(25 by default). This makes the comparison about color information
+*per unit of cortex*. The exact draw count matters little — the draw-to-draw
+variability is far smaller than the across-subject SEM the error bars report, so
+the draws just stabilize each subject's estimate.
 
 **4. Replication.** I repeated the matched analysis across subjects — first the
 four who completed all 40 sessions (1, 2, 5, 7), then all 8 (adding the
@@ -126,7 +129,8 @@ it.)
 ## Results
 
 All numbers below are across **all 8 NSD subjects** (mean ± SEM), each ROI
-subsampled to 687 voxels with alpha tuned per fit. Adding the four
+subsampled to 397 voxels (the smallest V4 across subjects) with alpha tuned per
+fit. Adding the four
 reduced-session subjects (3, 4, 6, 8) to the four complete ones lowers the
 absolute R² a little and tightens the error bars — the pattern is unchanged.
 
@@ -134,14 +138,14 @@ absolute R² a little and tightens the error bars — the pattern is unchanged.
 
 | ROI | overall R² | top-1 |
 |---|---|---|
-| concept (higher visual) | **0.044 ± 0.004** | 0.237 ± 0.004 |
-| early_v1v3 | 0.032 ± 0.004 | 0.247 ± 0.004 |
-| v4_color | 0.029 ± 0.004 | 0.233 ± 0.004 |
+| concept (higher visual) | **0.045 ± 0.004** | 0.239 ± 0.004 |
+| early_v1v3 | 0.032 ± 0.004 | 0.246 ± 0.004 |
+| v4_color | 0.029 ± 0.004 | 0.234 ± 0.004 |
 
 All ROIs decode the dominant color well above the 0.091 chance baseline. With
 size and regularization controlled, **higher visual cortex decodes color best** —
-a gap that is reliable across the full cohort (0.044 vs 0.032, well beyond the
-combined SEM).
+a gap that is reliable across the full cohort (0.045 vs 0.032, ~2.3× the combined
+SEM).
 
 ![color by ROI](figures/fig1_color_by_roi.png)
 
@@ -155,12 +159,12 @@ are unreliable everywhere: too few training examples.
 
 | ROI | overall luminance R² |
 |---|---|
-| early_v1v3 | **0.029 ± 0.003** |
-| concept | 0.016 ± 0.002 |
+| early_v1v3 | **0.029 ± 0.004** |
+| concept | 0.017 ± 0.003 |
 | v4_color | 0.012 ± 0.003 |
 
 For brightness the order **flips**: early visual leads, V4 drops to last, and at
-n = 8 early's lead over higher visual is now reliable (0.029 vs 0.016, ~3.6× the
+n = 8 early's lead over higher visual is reliable (0.029 vs 0.017, ~2.4× the
 combined SEM — it was only marginal at n = 4). The within-region contrast is also
 notable: higher visual and V4 are ~2× color-biased (better at chromatic color
 than at brightness), while **early visual is balanced** across the two.
@@ -169,7 +173,7 @@ than at brightness), while **early visual is balanced** across the two.
 
 The luminance signal is concentrated in the **dark bins** (L0–L2), where early
 visual dominates (L1 = 0.099, the single strongest luminance value anywhere) and
-V4 is near zero or negative (L0 = −0.006). This corroborates the "black" color
+V4 is near zero or negative (L0 = −0.007). This corroborates the "black" color
 result from an independent target.
 
 ## Interpretation

@@ -13,7 +13,7 @@ which voxels we happened to pick. Alpha is still tuned per fit (RidgeCV).
 Usage
 -----
     python -m brain2vision.compare_rois --subj 1 \
-        --color-targets data/color_targets.npy --n-draws 10 \
+        --color-targets data/color_targets.npy --n-draws 25 \
         --out roi_color_matched.png
 """
 
@@ -54,7 +54,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--subj", type=int, default=1)
     p.add_argument("--color-targets", required=True)
-    p.add_argument("--n-draws", type=int, default=10)
+    p.add_argument("--n-draws", type=int, default=25)
     p.add_argument("--match-voxels", type=int, default=0,
                    help="Target voxel count; 0 = use the smallest ROI's size")
     p.add_argument("--out", default="roi_color_matched.png")

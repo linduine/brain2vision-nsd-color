@@ -74,7 +74,7 @@ python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
     --out roi_luminance_8subj.png
 ```
 
-Result (8 subjects, matched to 687 voxels — see [`REPORT.md`](REPORT.md)):
+Result (8 subjects, matched to 397 voxels — see [`REPORT.md`](REPORT.md)):
 
 ![color decoding by ROI](figures/fig1_color_by_roi.png)
 

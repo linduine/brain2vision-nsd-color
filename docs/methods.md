@@ -193,15 +193,16 @@ badly the "answer" changes at each step):
    Fix: `RidgeCV` tunes `alpha` per fit (the chosen alpha scales with ROI size).
 2. **Voxel count.** Even properly regularized, a bigger ROI decodes better just
    from having more voxels. Fix: subsample every ROI to the smallest one's size
-   (V4's ~687), decode, and average over several random draws.
+   (the smallest V4 across subjects — 397 voxels for the 8-subject cohort),
+   decode, and average over several random draws.
 3. **Single-subject noise.** Fix: replicate across subjects and report mean ± SEM.
 
 `compare_rois` applies steps 1–2 for one subject; `replicate_subjects` adds
 step 3.
 
 ```bash
-# one subject, voxel-matched, 10 draws
-python -m brain2vision.compare_rois --subj 1 --color-targets data/color_targets.npy --n-draws 10
+# one subject, voxel-matched, 25 draws
+python -m brain2vision.compare_rois --subj 1 --color-targets data/color_targets.npy --n-draws 25
 
 # across subjects, matched — color, then luminance (any target via --target/--labels)
 python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 --target data/color_targets.npy --out roi_color_8subj.png
@@ -209,12 +210,13 @@ python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 --target da
     --labels L0,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 --out roi_luminance_8subj.png
 ```
 
-Each ROI is matched to 687 voxels; `replicate_subjects` reports per-subject and
+Each ROI is matched to the smallest V4 across subjects (397 voxels for all 8);
+`replicate_subjects` reports per-subject and
 across-subject (mean ± SEM) R²/top-1 and saves a figure plus a `_summary.npy`.
 
 ### Result
 
-The clean, replicated finding (all 8 subjects, matched to 687 voxels):
+The clean, replicated finding (all 8 subjects, matched to 397 voxels):
 
 ![color decoding by ROI](../figures/fig1_color_by_roi.png)
 

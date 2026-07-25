@@ -13,7 +13,7 @@ per-subject mean is then averaged across subjects.
 Usage
 -----
     python -m brain2vision.replicate_subjects --subjects 1 2 5 7 \
-        --color-targets data/color_targets.npy --n-draws 5 \
+        --color-targets data/color_targets.npy --n-draws 25 \
         --out roi_color_4subj.png
 
 Downloads each subject's betas on first use (~1.5 GB each), then caches them.
@@ -56,7 +56,9 @@ def main():
                    help="Path to a target .npy (color, luminance, ...)")
     p.add_argument("--labels", default=None,
                    help="Comma-separated column names; default = 11 colors")
-    p.add_argument("--n-draws", type=int, default=5)
+    p.add_argument("--n-draws", type=int, default=25,
+                   help="Random voxel subsamples per ROI, averaged. The result "
+                        "is insensitive to this (draw variance << subject SEM).")
     p.add_argument("--match-voxels", type=int, default=0)
     p.add_argument("--out", default="roi_color_4subj.png")
     args = p.parse_args()
