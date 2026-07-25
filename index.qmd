@@ -29,7 +29,7 @@ is made fair — matching regularization *and* the number of voxels across regio
   is bound to object and scene identity.
 - **Luminance → early visual cortex.** `early_v1v3` is the only region that
   decodes brightness as well as it decodes color (luminance R² = 0.029 ± 0.003),
-  and it owns the dark/bright extremes.
+  and is strongest at the dark/bright extremes.
 - **V4 is special at neither raw measure.** Despite its reputation as the color
   area, V4 shows no advantage for raw-pixel color — consistent with its role in
   *perceptual/constant* color rather than low-level color.
@@ -75,8 +75,9 @@ motivated two pre-specified questions, plus one control added along the way.
 - **H2 — higher visual cortex wins**, but largely because colour co-varies with
   scene/object identity, not because it is more chromatically tuned per voxel
   (@sec-color, @sec-interpretation).
-- **H3 — supported.** Early visual cortex decodes brightness best and owns the
-  dark bins (@sec-luminance), confirming a luminance signature.
+- **H3 — supported.** Early visual cortex decodes brightness best and is
+  strongest on the dark bins (@sec-luminance), consistent with a luminance
+  signature.
 
 The rest of the report is the evidence for these answers, and the confound
 removal needed to trust them.
@@ -125,17 +126,18 @@ core of the study.
 A single ridge `alpha` for every ROI is unfair: it over-penalizes small ROIs and
 under-penalizes large ones. With a fixed `alpha`, higher visual cortex (11k
 voxels) *overfit* and scored **negative** test R² (−0.37), making it look like
-the worst region — an artifact, not biology. Tuning `alpha` per fit with
-`RidgeCV` (leave-one-out CV over a grid) fixes this; the selected `alpha` scales
-with ROI size (V4 ≈ 5.3k, early ≈ 15k, concept ≈ 43k), and all overfitting
-vanishes.
+the worst region — which reflects under-regularization rather than the
+underlying signal. Tuning `alpha` per fit with `RidgeCV` (leave-one-out CV over a
+grid) addresses this; the selected `alpha` scales with ROI size (V4 ≈ 5.3k, early
+≈ 15k, concept ≈ 43k), and the overfitting is much reduced.
 
 ### Voxel-count matching {#sec-matching}
 
 Even when properly regularized, a bigger ROI decodes better simply from having
 more voxels. To measure color information *per unit of cortex*, every ROI is
 subsampled to the smallest ROI's size (V4's **687 voxels**), decoded, and
-averaged over 10 random draws. Only after this does a ranking mean anything.
+averaged over 10 random draws. This way, a ranking reflects color information per
+voxel rather than ROI size.
 
 ### Trial-neighbor data hygiene {#sec-hygiene}
 
@@ -171,7 +173,7 @@ cohort (0.044 vs 0.032, well beyond the combined SEM).
 
 ![Per-color decoding R² by ROI (8 subjects, matched to 687 voxels; error bars = across-subject SEM). Higher visual cortex leads on chromatic, object-bound colors (brown, blue, green, orange); early visual cortex is the standout for black.](figures/fig1_color_by_roi.png){#fig-color}
 
-The per-color structure is the interesting part. Higher visual cortex leads on
+Breaking it down by color: higher visual cortex leads on
 the chromatic, object-bound colors (brown 0.13, blue 0.10, orange 0.07, green
 0.06). Early visual cortex is the standout for **black** (0.080 vs V4's 0.002 —
 essentially zero) and leads on white too — the luminance extremes. Rare colors

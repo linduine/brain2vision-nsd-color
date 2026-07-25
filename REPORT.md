@@ -12,8 +12,8 @@ found a clean, replicated functional dissociation:
   for regularization *and* the number of voxels, **higher visual cortex decodes
   color best**, because color is bound to object and scene identity.
 - **Early visual cortex (V1–V3)** is the only region that decodes **luminance
-  (brightness)** as well as it decodes color — it owns the low-level, dark/bright
-  end of the signal.
+  (brightness)** as well as it decodes color, and is strongest at the low-level,
+  dark/bright end.
 - **V4** — despite its textbook reputation as "the color area" — shows no special
   advantage for *raw pixel* color, consistent with its actual role in
   *perceptual/constant* color rather than low-level color.
@@ -54,8 +54,8 @@ questions, plus a control added along the way:
 **What we found:** H1 — *not supported* (V4 has no raw-colour advantage,
 consistent with a perceptual-colour role); H2 — *higher visual cortex wins*, but
 via colour↔identity correlation, not per-voxel chromatic tuning; H3 — *supported*
-(early visual decodes brightness best and owns the dark end). The rest of this
-document is the evidence, and the confounds removed to trust it.
+(early visual decodes brightness best and is strongest at the dark end). The rest
+of this document is the evidence, and the confounds removed to trust it.
 
 ## Background
 
@@ -145,7 +145,7 @@ combined SEM).
 
 ![color by ROI](figures/fig1_color_by_roi.png)
 
-The per-color pattern is the interesting part. Higher visual cortex leads on the
+Breaking it down by color: higher visual cortex leads on the
 chromatic, object-bound colors (brown 0.13, blue 0.10, orange 0.07, green 0.06).
 Early visual is the standout for **black** (0.080 vs V4's 0.002 — essentially
 zero) and leads on white too — the luminance extremes. Rare colors (purple, pink)
@@ -161,10 +161,9 @@ are unreliable everywhere: too few training examples.
 
 For brightness the order **flips**: early visual leads, V4 drops to last, and at
 n = 8 early's lead over higher visual is now reliable (0.029 vs 0.016, ~3.6× the
-combined SEM — it was only marginal at n = 4). Within each region, the contrast
-is the real story: higher visual and V4 are ~2× color-biased (they care about
-chromatic color far more than brightness), while **early visual is balanced**
-across the two.
+combined SEM — it was only marginal at n = 4). The within-region contrast is also
+notable: higher visual and V4 are ~2× color-biased (better at chromatic color
+than at brightness), while **early visual is balanced** across the two.
 
 ![luminance by ROI](figures/fig2_luminance_by_roi.png)
 
