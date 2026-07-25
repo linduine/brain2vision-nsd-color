@@ -40,6 +40,47 @@ within each region, `concept` and `v4_color` are ~2× color-biased, while
 
 ![Functional dissociation between color and luminance decoding, by ROI (all 8 subjects, each ROI matched to 687 voxels; error bars are across-subject SEM). Higher visual cortex is strongly color-biased; early visual cortex is balanced; V4 is color-biased but weak on both raw measures.](figures/fig3_dissociation.png){#fig-dissociation width=70%}
 
+## Motivation & hypotheses {#sec-hypotheses}
+
+Area V4 has long been described as the brain's "colour centre." The claim traces
+to Zeki's single-unit recordings in macaque prestriate cortex [@zeki1973], to
+human PET and fMRI localizers that isolated a ventral-occipital colour-responsive
+region (hV4 / V4α) [@lueck1989; @mckeefry1997; @bartels2000], and to the clinical
+syndrome of *cerebral achromatopsia*, in which circumscribed ventral-occipital
+lesions abolish colour perception while sparing form and motion [@zeki1990].
+Later work complicates this tidy picture — colour is processed across a network,
+and V4's role is better described as *perceptual / constant* colour than raw
+wavelength [@roe2012] — but "V4 = colour" remains the textbook default. That
+motivated two pre-specified questions, plus one control added along the way.
+
+- **H1 — Is V4 special for colour?** If V4 is a colour centre, it should decode
+  the colour content of the seen image *better than other visual ROIs*, even when
+  the comparison is made fair (matched voxel count and regularization).
+- **H2 — Early vs. higher visual cortex for colour.** Setting V4 aside, which
+  carries more decodable colour: early visual cortex (V1–V3), which has
+  colour-opponent signals from the first cortical stage, or higher "concept"
+  cortex, where colour co-varies with object and scene identity?
+- **H3 — Is early visual cortex's colour signal actually luminance?** (Added
+  after the colour results: early visual decoded *black*/*white* far better than
+  any chromatic colour.) If that reflects brightness sensitivity rather than
+  chromatic tuning, early visual should also decode an independent *luminance*
+  target best.
+
+### What we found {#sec-hypotheses-answers}
+
+- **H1 — not supported.** V4 shows no special advantage for raw-pixel colour;
+  it is middling on chromatic colours and near-zero on the luminance extremes
+  (@sec-color). This is consistent with V4's role in *perceptual* colour, which
+  raw-pixel targets do not probe.
+- **H2 — higher visual cortex wins**, but largely because colour co-varies with
+  scene/object identity, not because it is more chromatically tuned per voxel
+  (@sec-color, @sec-interpretation).
+- **H3 — supported.** Early visual cortex decodes brightness best and owns the
+  dark bins (@sec-luminance), confirming a luminance signature.
+
+The rest of the report is the evidence for these answers, and the confound
+removal needed to trust them.
+
 ## Dataset & baseline {#sec-dataset}
 
 The Natural Scenes Dataset [@allen2022nsd] is a large 7T fMRI dataset in which

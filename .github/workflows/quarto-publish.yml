@@ -5,6 +5,8 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+# Native GitHub Pages deploy (no gh-pages branch needed).
+# Requires: Settings -> Pages -> Source = "GitHub Actions".
 permissions:
   contents: read
   pages: write
@@ -20,14 +22,20 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+
+      # index.qmd has no executable code cells (all snippets are static),
+      # so no Python/Jupyter runtime is needed to render.
       - name: Render site
         run: quarto render
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
   deploy:
     needs: build
     runs-on: ubuntu-latest

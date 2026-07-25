@@ -28,6 +28,35 @@ weak on both raw measures. All effects replicate across **all 8 NSD subjects**,
 and both directions of the dissociation are statistically reliable (the SEM bars
 don't overlap where it counts).
 
+## Motivation & hypotheses
+
+Area V4 has long been described as the brain's "colour centre" — from Zeki's
+macaque single-unit recordings (Zeki, 1973), to human PET and fMRI localizers
+that isolated a ventral-occipital colour region (hV4 / V4α; Lueck et al., 1989;
+McKeefry & Zeki, 1997; Bartels & Zeki, 2000), to cerebral achromatopsia, where
+ventral-occipital lesions abolish colour perception while sparing form and motion
+(Zeki, 1990). Modern work is more nuanced — colour is processed across a network
+and V4's role is closer to *perceptual/constant* colour than raw wavelength (Roe
+et al., 2012) — but "V4 = colour" is the textbook default. That set up two
+questions, plus a control added along the way:
+
+- **H1 — Is V4 special for colour?** If so, V4 should decode the image's colour
+  content better than other ROIs, even under a fair comparison (matched voxels +
+  regularization).
+- **H2 — Early vs. higher visual cortex for colour?** Which carries more
+  decodable colour: early visual (V1–V3, colour-opponent from the first cortical
+  stage) or higher "concept" cortex (where colour co-varies with object/scene
+  identity)?
+- **H3 — Is early visual's colour signal really luminance?** Early visual decoded
+  black/white far better than any chromatic colour; if that is brightness
+  sensitivity, it should also decode an independent luminance target best.
+
+**What we found:** H1 — *not supported* (V4 has no raw-colour advantage,
+consistent with a perceptual-colour role); H2 — *higher visual cortex wins*, but
+via colour↔identity correlation, not per-voxel chromatic tuning; H3 — *supported*
+(early visual decodes brightness best and owns the dark end). The rest of this
+document is the evidence, and the confounds removed to trust it.
+
 ## Background
 
 NSD is a large 7T fMRI dataset in which 8 subjects each viewed ~9–10k natural
