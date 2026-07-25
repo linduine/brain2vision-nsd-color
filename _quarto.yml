@@ -12,12 +12,10 @@ website:
     right:
       - icon: github
         href: "https://github.com/linduine/brain2vision-nsd-color"
-        aria-label: GitHub repository
   page-footer:
     center: "Code MIT-licensed · data under NSD/COCO terms · built with Quarto"
 
 bibliography: references.bib
-csl: null
 
 format:
   html:
