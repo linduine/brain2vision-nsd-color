@@ -82,8 +82,9 @@ def load_roi_masks(subj: int, rois, mask_path=None, match="exact"):
     Return a boolean array (length = n_nsdgeneral_voxels) that is the UNION of
     the requested ROI masks for the given subject.
 
-    `rois`  : list of region-name fragments (or a named-set key handled by
-              load_roi_set).
+    `rois`  : list of region-name fragments (e.g. "V1", "higher_vis") and/or
+              ROI_SETS keys used as shorthand (e.g. "concept", "early_v1v3"),
+              which are expanded to their fragments. Mixing is fine.
     `match` : "exact" (default) -> leaf must equal a fragment; "substring" ->
               a dataset matches if any fragment is a substring of its leaf name.
     Region lookup uses the tail of the dataset path, so both "subj01/V1" and
@@ -92,8 +93,14 @@ def load_roi_masks(subj: int, rois, mask_path=None, match="exact"):
     if mask_path is None:
         mask_path = hf_hub_download(REPO_ID, MASK_FILE, repo_type="dataset")
 
+    # expand ROI_SETS shorthand ("concept" -> ["higher_vis"]); leave real
+    # region names untouched (idempotent, so already-expanded lists are fine).
+    expanded = []
+    for r in rois:
+        expanded.extend(ROI_SETS[r] if r in ROI_SETS else [r])
+
     subj_key = f"subj{subj:02d}"
-    wanted = [r.lower() for r in rois]
+    wanted = [r.lower() for r in expanded]
     combined = None
     found = []
 
