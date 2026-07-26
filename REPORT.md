@@ -126,6 +126,13 @@ in each trial's *neighbor* records — 4× the data plus label padding — which
 inflated and slightly leaked the estimates. Filtering to the current trial fixed
 it.)
 
+I also validated the recovered pairing by falsification (`alignment_check`, a
+label-permutation test): with the true alignment V4 decodes color at R² = 0.045,
+versus R² ≈ 0 (−0.0003 ± 0.0001 over 20 shuffles) when the image labels are
+permuted — the true value sits hundreds of SDs above the null, confirming the
+betas↔image mapping end-to-end. (This validates the *pairing*, not decoding
+accuracy; the modest R² is expected from noisy single-trial fMRI and a small ROI.)
+
 ## Results
 
 All numbers below are across **all 8 NSD subjects** (mean ± SEM), each ROI

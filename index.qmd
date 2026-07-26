@@ -152,6 +152,14 @@ which inflated the trial count and slightly leaked information across the
 train/test split. Restricting to the current-trial record (and dropping padding)
 fixed it. Ranges are now sane: ~30k trials/subject, image ids in [0, 73000).
 
+The recovered pairing was then validated by falsification (a label-permutation
+test, `alignment_check`): with the true alignment, V4 decodes color at R² = 0.045,
+versus R² ≈ 0 (−0.0003 ± 0.0001 over 20 shuffles) when the image labels are
+permuted. The true value sits hundreds of SDs above the shuffled null, confirming
+the betas↔image mapping end-to-end — a scrambled pairing would have collapsed to
+zero. (This checks the *pairing*, not decoding accuracy: the modest R² itself is
+expected from noisy single-trial fMRI and a small ROI.)
+
 ### Replication {#sec-replication}
 
 The matched analysis was run first on the four subjects with all 40 sessions
