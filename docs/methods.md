@@ -19,6 +19,7 @@ Each item below is a module run with `python -m brain2vision.<name>`.
 | `color_decode`         | decode any target from an ROI + evaluate (single subject) |
 | `compare_rois`         | voxel-matched ROI comparison for one subject + plot |
 | `replicate_subjects`   | matched comparison across subjects (any target) — used for the findings |
+| `alignment_check`      | falsification test of the betas↔image alignment (permutation null) |
 | `color_shared_subject` | shared-subject model: per-subject projection → shared readout |
 
 ## Setup
@@ -181,6 +182,16 @@ and −1 padding is dropped). It prints the id/row ranges and warns if they look
 off — glance at that line on the first run. If your `behav` layout differs, set
 `IMG_COL` / `BETAS_COL` at the top of `color_decode.py`, or supply your own
 alignment via `--ids-npy` / `--betas-npy`.
+
+You don't have to take the alignment on faith — `alignment_check` falsifies it:
+it decodes once with the true pairing and many times with the target labels
+permuted, and confirms the true R² sits well above the shuffled null. If the
+`behav` columns were wrong, true and shuffled would be indistinguishable.
+
+```bash
+python -m brain2vision.alignment_check --subj 1 --rois V4 --n-perm 20 \
+    --color-targets data/color_targets.npy
+```
 
 ## Fair ROI comparison — the methodology that matters
 
