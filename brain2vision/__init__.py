@@ -12,7 +12,8 @@ inspect_rois         list available ROI region names per subject
 clip_targets         CLIP image/text embedding targets
 bboxes               COCO bounding boxes in the NSD stimulus frame
 visualize            draw bounding boxes on a stimulus image
-color_targets        11-way basic-color distribution per image
+color_targets        11-way basic-color distribution per image (HSV rules)
+perceptual_color_targets  11-way color via learned color-names (van de Weijer) [scaffold]
 luminance_targets    11-bin brightness distribution per image
 color_decode         decode a target from an ROI + evaluate (single subject)
 compare_rois         voxel-matched ROI comparison + plot (one subject)

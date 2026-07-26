@@ -263,8 +263,13 @@ sharpen it, and the repository *begins* the groundwork for the first.
   sub-regions from the raw volumetric betas — but the decoding analysis over them
   is not yet done.
 - **Probe perceptual colour, not just pixel colour.** Targets that capture colour
-  constancy or colour *categories* (rather than raw-pixel histograms) would
-  actually test V4's putative specialty, which the present targets do not.
+  *categories* or colour constancy (rather than raw-pixel HSV rules) would better
+  reflect how people name colour — the current rules dump a washed-out sky into
+  white/grey rather than blue. A first step is scaffolded: `perceptual_color_targets`
+  builds the target from the van de Weijer learned colour-name model, so pale
+  sky-blue keeps real "blue" mass. The decoding over it is not yet run. Full
+  colour *constancy* (discounting the illuminant) would go further still, and is
+  what would actually test V4's specialty.
 - **Extend toward reconstruction.** Pairing the ROI betas with CLIP embedding
   targets (a `clip_targets` module is included) — and adding a VAE-latent target
   for the low-level pathway — would move from "what is decodable" toward "what can

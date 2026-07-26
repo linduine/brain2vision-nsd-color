@@ -14,7 +14,8 @@ Each item below is a module run with `python -m brain2vision.<name>`.
 | `bboxes`               | COCO bounding boxes per image, in the NSD 425×425 frame |
 | `visualize`            | draw boxes on a stimulus image to sanity-check the transform |
 | `clip_targets`         | CLIP image/text embeddings (targets for reconstruction work) |
-| `color_targets`        | per-image 11-way basic-color distribution |
+| `color_targets`        | per-image 11-way basic-color distribution (HSV rules) |
+| `perceptual_color_targets` | 11-way color via van de Weijer learned color-names (scaffold) |
 | `luminance_targets`    | per-image 11-bin brightness distribution |
 | `color_decode`         | decode any target from an ROI + evaluate (single subject) |
 | `compare_rois`         | voxel-matched ROI comparison for one subject + plot |

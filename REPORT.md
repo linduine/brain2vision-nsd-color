@@ -233,8 +233,12 @@ groundwork for taking it further, but these analyses are not yet done:
   scene-selective cortex (PPA) carries the scene-color signal. The `raw_nsd`
   module extracts these sub-regions from raw volumetric betas; the decoding over
   them is the natural next experiment.
-- **Probe perceptual color** (constancy, color categories) rather than raw-pixel
-  histograms, which would actually test V4's putative specialty.
+- **Probe perceptual color** rather than raw-pixel histograms. Scaffolded:
+  `perceptual_color_targets` builds the target from the van de Weijer learned
+  color-name model (so pale sky-blue keeps "blue" mass instead of being called
+  white), but the decoding over it isn't run yet. Full color *constancy*
+  (discounting the illuminant) would go further and is what would actually test
+  V4's specialty.
 - **Extend toward reconstruction** using the included `clip_targets` module (and
   a VAE-latent target still to be added) for the low-level pathway.
 
