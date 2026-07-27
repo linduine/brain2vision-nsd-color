@@ -133,17 +133,20 @@ permuted — the true value sits hundreds of SDs above the null, confirming the
 betas↔image mapping end-to-end. (This validates the *pairing*, not decoding
 accuracy; the modest R² is expected from noisy single-trial fMRI and a small ROI.)
 
-**Statistics.** The mean ± SEM in the tables gives a visual sense of which
-differences look dependable, but overlapping error bars aren't a test — so we
-checked the ROI differences properly, and above all wanted to see whether the
-colour/luminance crossover is a real interaction rather than two effects pointing
-opposite ways. We compare regions within each subject with an exact paired
-sign-flip permutation test (no distributional assumptions, good for a small
-sample), a 95% bootstrap CI for each difference, and Benjamini-Hochberg FDR
-correction across the family of contrasts
-([`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)).
-With n = 8 the permutation p can't go below 2/2⁸ ≈ 0.008, so p = 0.008 means "more
-extreme than every other sign combination," not marginal. All eight contrasts:
+**Statistics.** The mean ± SEM values indicate which ROI differences are likely
+reliable, but non-overlap of standard-error bars is not itself a statistical test.
+We therefore assessed the contrasts inferentially, with particular attention to
+whether the colour/luminance ordering constitutes a genuine region-by-domain
+interaction rather than two independently directed main effects. Because every
+subject contributes to all ROIs, contrasts were computed within-subject and
+evaluated with an exact paired sign-flip permutation test (no distributional
+assumptions; appropriate for a small sample), 95% bootstrap confidence intervals
+for effect sizes, and Benjamini-Hochberg FDR correction across the family of
+contrasts ([`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)).
+At n = 8 the two-sided permutation *p* is bounded below by 2/2⁸ ≈ 0.008, so
+*p* = 0.008 denotes the maximal evidence attainable at this sample size (the
+difference exceeds all alternative sign assignments), not a marginal result. All
+eight contrasts:
 
 | contrast | Δ R² | p | q (FDR) | 95% CI |
 |---|---:|---:|---:|:---:|

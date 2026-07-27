@@ -170,29 +170,29 @@ lowered the absolute R² a little and tightened the error bars.
 
 ### Statistical inference {#sec-stats}
 
-The bar charts show each ROI's decoding as mean ± SEM across the eight subjects,
-which gives a visual feel for which differences look dependable. But eyeballing
-whether two error bars overlap isn't really a test, so we wanted to check the ROI
-differences properly — and, most of all, to see whether the colour/luminance
-crossover is a genuine interaction rather than two effects that happen to point
-opposite ways.
+The mean ± SEM values reported above indicate which ROI differences are likely to
+be reliable, but non-overlap of standard-error bars is not itself a statistical
+test. We therefore assessed the ROI contrasts inferentially, with particular
+attention to whether the colour/luminance ordering constitutes a genuine
+region-by-domain interaction rather than two independently directed main effects.
 
-To do that we compare regions *within* each subject (the same eight people see
-both), using an exact paired sign-flip permutation test (it assumes nothing about
-the distribution, which suits a small sample), a 95% bootstrap confidence interval
-for the size of each difference, and a Benjamini-Hochberg FDR correction because
-we're looking at a family of contrasts. The implementation is the
-[`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)
-module. One number worth reading carefully: with only eight subjects the
-permutation *p* can't drop below 2/2⁸ ≈ 0.008, so a *p* of 0.008 isn't "barely
-significant" — it means the difference is more extreme than every other way the
-signs could have fallen, i.e. as strong as eight subjects can show.
+Because every subject contributes to all ROIs, contrasts were computed
+within-subject and evaluated with an exact paired sign-flip permutation test,
+which requires no distributional assumptions and is appropriate for a small
+sample. Effect sizes are reported as 95% bootstrap confidence intervals, and
+p-values are corrected for multiple comparisons across the family of contrasts
+using the Benjamini-Hochberg procedure (implementation:
+[`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)).
+Note that at n = 8 the two-sided permutation *p* is bounded below by 2/2⁸ ≈ 0.008;
+a value of 0.008 therefore indicates that the observed difference exceeds all
+alternative sign assignments — the maximal evidence attainable at this sample
+size — rather than a marginal result.
 
-The eight contrasts are in @tbl-stats and @fig-stats. Reassuringly, every ROI
-comparison survives FDR correction except early visual vs V4 on colour, which
-comes out a genuine tie — and the interaction we cared about most (higher visual
-being more colour-biased than early visual) is the largest and most reliable
-effect of the set.
+The full set of contrasts is reported in @tbl-stats and @fig-stats. All ROI
+comparisons remain significant after FDR correction, with the single exception of
+early visual versus V4 for colour, which is statistically indistinguishable. The
+interaction of primary interest — higher visual cortex being more colour-biased
+than early visual cortex — is the largest and most reliable effect in the set.
 
 | contrast | Δ R² | *p* | *q* (FDR) | 95% CI |
 |---|---:|---:|---:|:---:|
