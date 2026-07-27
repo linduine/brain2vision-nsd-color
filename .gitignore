@@ -20,7 +20,8 @@ coco_cache/
 # ---- outputs ----
 *.png
 !docs/*.png
-!figures/*.png    # keep committed result figures
+# keep committed result figures (inline comments are NOT allowed on the rule line)
+!figures/*.png
 *.log
 runs/
 outputs/
