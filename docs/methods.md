@@ -233,9 +233,42 @@ The clean, replicated finding (all 8 subjects, matched to 397 voxels):
 
 ![color decoding by ROI](../figures/fig1_color_by_roi.png)
 
-Higher visual cortex decodes color best; early visual owns luminance/darkness;
-V4 shows no special advantage for *raw pixel* color. Full numbers, luminance
-control, and interpretation are in [`../REPORT.md`](../REPORT.md).
+Higher visual cortex decodes color best; early visual is strongest at
+luminance/darkness; V4 shows no special advantage for *raw pixel* color. Full
+numbers, luminance control, and interpretation are in [`../REPORT.md`](../REPORT.md).
+
+## Statistical inference
+
+`replicate_subjects` reports mean ± SEM, but non-overlap of SEM bars is not a
+test. `stats` evaluates the ROI differences formally from the two
+`*_summary.npy` files (color and luminance).
+
+```bash
+python -m brain2vision.stats \
+    --color roi_color_8subj_summary.npy \
+    --luminance roi_luminance_8subj_summary.npy
+```
+
+It reads each ROI's per-subject overall R² (`agg[roi]["ov"]`, one value per
+subject) and, for each contrast, computes:
+
+- **Effect** — the mean paired difference across subjects (regions are compared
+  *within* subject, since every subject contributes to all ROIs).
+- **p** — an exact paired **sign-flip permutation test** (enumerate all `2^n`
+  sign vectors; no distributional assumption, suited to small `n`). At `n = 8`
+  the two-sided `p` floors at `2/2^8 ≈ 0.008` — that value is the maximal evidence
+  attainable, not a marginal result.
+- **95% CI** — a bootstrap CI (resample subjects with replacement) on the effect.
+- **q** — Benjamini-Hochberg FDR across the family of contrasts.
+
+Contrasts computed: the color main effects (concept/early/V4 pairwise), the
+luminance main effects, and — the key one — the **interaction** via a *bias*
+score (`color R² − luminance R²`) per ROI, so `bias(concept) − bias(early)` tests
+whether the colour/luminance crossover is a genuine region-by-domain interaction
+rather than two independent main effects. These results populate the stats table
+and forest plot in the write-up ([`../REPORT.md`](../REPORT.md)); regenerate the
+forest plot (`figures/fig4_contrasts.png`) from the same summaries if the pipeline
+is re-run.
 
 ## Shared-subject model (alternative pooling)
 
