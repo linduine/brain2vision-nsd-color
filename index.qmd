@@ -170,19 +170,29 @@ lowered the absolute R² a little and tightened the error bars.
 
 ### Statistical inference {#sec-stats}
 
-ROI differences are tested across subjects — the
-[`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)
-module — not read off the SEM bars. Each contrast uses an exact paired
-**sign-flip permutation test** (all 2⁸ sign combinations), a 95% **bootstrap
-confidence interval**, and **Benjamini-Hochberg FDR** correction across the family
-of contrasts. With n = 8 the permutation *p* has a floor of 2/2⁸ ≈ 0.008 — so
-*p* = 0.008 means the observed difference is more extreme than all other sign
-combinations, i.e. as strong as eight subjects can show, not a marginal result.
+The bar charts show each ROI's decoding as mean ± SEM across the eight subjects,
+which gives a visual feel for which differences look dependable. But eyeballing
+whether two error bars overlap isn't really a test, so we wanted to check the ROI
+differences properly — and, most of all, to see whether the colour/luminance
+crossover is a genuine interaction rather than two effects that happen to point
+opposite ways.
 
-All eight contrasts are in @tbl-stats and @fig-stats. Every ROI comparison is
-significant after FDR correction **except** early visual vs V4 on colour, which is
-a true tie — and the *bias* contrast (concept − early on colour-minus-luminance,
-the double-dissociation interaction) is the largest and most reliable of all.
+To do that we compare regions *within* each subject (the same eight people see
+both), using an exact paired sign-flip permutation test (it assumes nothing about
+the distribution, which suits a small sample), a 95% bootstrap confidence interval
+for the size of each difference, and a Benjamini-Hochberg FDR correction because
+we're looking at a family of contrasts. The implementation is the
+[`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)
+module. One number worth reading carefully: with only eight subjects the
+permutation *p* can't drop below 2/2⁸ ≈ 0.008, so a *p* of 0.008 isn't "barely
+significant" — it means the difference is more extreme than every other way the
+signs could have fallen, i.e. as strong as eight subjects can show.
+
+The eight contrasts are in @tbl-stats and @fig-stats. Reassuringly, every ROI
+comparison survives FDR correction except early visual vs V4 on colour, which
+comes out a genuine tie — and the interaction we cared about most (higher visual
+being more colour-biased than early visual) is the largest and most reliable
+effect of the set.
 
 | contrast | Δ R² | *p* | *q* (FDR) | 95% CI |
 |---|---:|---:|---:|:---:|

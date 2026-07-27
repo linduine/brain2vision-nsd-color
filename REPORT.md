@@ -133,13 +133,17 @@ permuted — the true value sits hundreds of SDs above the null, confirming the
 betas↔image mapping end-to-end. (This validates the *pairing*, not decoding
 accuracy; the modest R² is expected from noisy single-trial fMRI and a small ROI.)
 
-**Statistics** ([`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)):
-ROI differences are tested across subjects, not read off the SEM bars. Each
-contrast uses an exact paired sign-flip permutation test (all 2⁸ sign
-combinations), a 95% bootstrap CI, and Benjamini-Hochberg FDR correction across
-the family of contrasts. With n = 8 the permutation p floors at 2/2⁸ ≈ 0.008, so
-p = 0.008 means "more extreme than every other sign combination," not marginal.
-All eight contrasts:
+**Statistics.** The mean ± SEM in the tables gives a visual sense of which
+differences look dependable, but overlapping error bars aren't a test — so we
+checked the ROI differences properly, and above all wanted to see whether the
+colour/luminance crossover is a real interaction rather than two effects pointing
+opposite ways. We compare regions within each subject with an exact paired
+sign-flip permutation test (no distributional assumptions, good for a small
+sample), a 95% bootstrap CI for each difference, and Benjamini-Hochberg FDR
+correction across the family of contrasts
+([`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)).
+With n = 8 the permutation p can't go below 2/2⁸ ≈ 0.008, so p = 0.008 means "more
+extreme than every other sign combination," not marginal. All eight contrasts:
 
 | contrast | Δ R² | p | q (FDR) | 95% CI |
 |---|---:|---:|---:|:---:|
