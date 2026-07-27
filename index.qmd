@@ -167,13 +167,25 @@ The matched analysis was run first on the four subjects with all 40 sessions
 3, 4, 6, 8), summarizing as mean ± SEM. The pattern held; the added subjects
 lowered the absolute R² a little and tightened the error bars.
 
+### Statistical inference {#sec-stats}
+
+ROI differences are tested across subjects (`stats`), not read off the SEM bars:
+each contrast uses an exact paired **sign-flip permutation test** (all 2^8 sign
+combinations), a 95% **bootstrap confidence interval**, and **Benjamini-Hochberg
+FDR** correction across the family of contrasts. With n = 8 the permutation
+*p* has a floor of 2/2⁸ ≈ 0.008 — so *p* = 0.008 means the observed difference is
+more extreme than all other sign combinations, i.e. as strong as eight subjects
+can show, not a marginal result.
+
 ## Results & interpretation {#sec-results}
 
 ### Color: higher visual cortex wins {#sec-color}
 
 Across all 8 subjects, with size and regularization controlled, higher visual
-cortex decodes color best (@tbl-color, @fig-color) — a gap reliable across the
-cohort (0.045 vs 0.032, ~2.3× the combined SEM).
+cortex decodes color best (@tbl-color, @fig-color): concept beats early visual
+(Δ = 0.012; paired sign-flip permutation *p* = 0.008, FDR *q* = 0.01; 95% CI
+[0.007, 0.018]) and V4 (Δ = 0.016, *q* = 0.01). Early visual and V4 are
+statistically tied on color (Δ = 0.004, *q* = 0.14).
 
 | ROI | overall R² | top-1 |
 |---|---:|---:|
@@ -195,9 +207,13 @@ negative R² is a scarcity artifact.
 ### Luminance: early visual cortex wins {#sec-luminance}
 
 For brightness the ordering **flips** (@tbl-luminance, @fig-luminance): early
-visual leads, V4 drops to last, and at n = 8 early's lead over higher visual is
-reliable (0.029 vs 0.017, ~2.4× the combined SEM — it was only marginal at
-n = 4).
+visual leads and V4 drops to last. At n = 8 early's lead over higher visual is
+significant (Δ = 0.012; *p* = 0.016, *q* = 0.018; 95% CI [0.008, 0.015] — it was
+only marginal at n = 4), and early beats V4 more strongly (Δ = 0.017, *q* = 0.01).
+The **dissociation itself** is significant: higher visual cortex is more
+color-biased than early visual — the color-minus-luminance R² differs by
+Δ = 0.024 (*p* = 0.008, *q* = 0.01; 95% CI [0.021, 0.028]) — which is what makes
+the crossover a real double dissociation rather than two coincidental effects.
 
 | ROI | overall luminance R² |
 |---|---:|

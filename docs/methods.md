@@ -20,6 +20,7 @@ Each item below is a module run with `python -m brain2vision.<name>`.
 | `color_decode`         | decode any target from an ROI + evaluate (single subject) |
 | `compare_rois`         | voxel-matched ROI comparison for one subject + plot |
 | `replicate_subjects`   | matched comparison across subjects (any target) — used for the findings |
+| `stats`                | permutation tests + bootstrap CIs + FDR on the ROI differences |
 | `alignment_check`      | falsification test of the betas↔image alignment (permutation null) |
 | `color_shared_subject` | shared-subject model: per-subject projection → shared readout |
 

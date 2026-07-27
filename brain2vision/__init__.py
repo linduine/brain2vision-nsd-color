@@ -18,6 +18,7 @@ luminance_targets    11-bin brightness distribution per image
 color_decode         decode a target from an ROI + evaluate (single subject)
 compare_rois         voxel-matched ROI comparison + plot (one subject)
 replicate_subjects   voxel-matched comparison across subjects (any target)
+stats                permutation tests + bootstrap CIs + FDR on ROI differences
 alignment_check      falsification test of the betas<->image alignment (permutation null)
 color_shared_subject shared-subject V4 model (per-subject projection, torch)
 """

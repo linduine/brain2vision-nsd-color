@@ -3,8 +3,9 @@ perceptual_color_targets.py
 ===========================
 NEXT-STEP / SCAFFOLD — not part of the validated result.
 
-Build a PERCEPTUAL color target using the van de Weijer et al. (2009) learned
-color-name model ("Learning Color Names from Real-World Images"). Instead of the
+Build a PERCEPTUAL color target using the van de Weijer et al. learned
+color-name model (CVPR 2007, "Learning Color Names from Real-World Images"; IEEE
+TIP 2009, "Learning Color Names for Real-World Applications"). Instead of the
 hand-written HSV rules in color_targets.py — which dump desaturated pixels (a
 washed-out sky) into white/gray — this uses a lookup learned from how people
 actually name colors, so pale sky-blue keeps real "blue" probability.

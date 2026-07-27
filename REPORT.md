@@ -133,6 +133,13 @@ permuted — the true value sits hundreds of SDs above the null, confirming the
 betas↔image mapping end-to-end. (This validates the *pairing*, not decoding
 accuracy; the modest R² is expected from noisy single-trial fMRI and a small ROI.)
 
+**Statistics** (`stats`): ROI differences are tested across subjects, not read
+off the SEM bars. Each contrast uses an exact paired sign-flip permutation test
+(all 2⁸ sign combinations), a 95% bootstrap CI, and Benjamini-Hochberg FDR
+correction across the family of contrasts. With n = 8 the permutation p floors at
+2/2⁸ ≈ 0.008, so p = 0.008 means "more extreme than every other sign
+combination," not a marginal result.
+
 ## Results
 
 All numbers below are across **all 8 NSD subjects** (mean ± SEM), each ROI
@@ -150,9 +157,10 @@ absolute R² a little and tightens the error bars — the pattern is unchanged.
 | v4_color | 0.029 ± 0.004 | 0.234 ± 0.004 |
 
 All ROIs decode the dominant color well above the 0.091 chance baseline. With
-size and regularization controlled, **higher visual cortex decodes color best** —
-a gap that is reliable across the full cohort (0.045 vs 0.032, ~2.3× the combined
-SEM).
+size and regularization controlled, **higher visual cortex decodes color best**:
+concept beats early visual (Δ = 0.012; paired sign-flip permutation p = 0.008,
+FDR q = 0.01; 95% CI [0.007, 0.018]) and V4 (Δ = 0.016, q = 0.01). Early visual
+and V4 are statistically tied on color (Δ = 0.004, q = 0.14).
 
 ![color by ROI](figures/fig1_color_by_roi.png)
 
@@ -170,11 +178,16 @@ are unreliable everywhere: too few training examples.
 | concept | 0.017 ± 0.003 |
 | v4_color | 0.012 ± 0.003 |
 
-For brightness the order **flips**: early visual leads, V4 drops to last, and at
-n = 8 early's lead over higher visual is reliable (0.029 vs 0.017, ~2.4× the
-combined SEM — it was only marginal at n = 4). The within-region contrast is also
-notable: higher visual and V4 are ~2× color-biased (better at chromatic color
-than at brightness), while **early visual is balanced** across the two.
+For brightness the order **flips**: early visual leads and V4 drops to last. At
+n = 8 early's lead over higher visual is significant (Δ = 0.012; p = 0.016,
+q = 0.018; 95% CI [0.008, 0.015] — only marginal at n = 4), and early beats V4
+more strongly (Δ = 0.017, q = 0.01). The within-region contrast is the crux:
+higher visual and V4 are ~2× color-biased (better at chromatic color than
+brightness), while **early visual is balanced**. That interaction is itself
+significant — higher visual is more color-biased than early visual, color-minus-
+luminance R² differing by Δ = 0.024 (p = 0.008, q = 0.01; 95% CI [0.021, 0.028])
+— which is what makes the crossover a genuine double dissociation rather than two
+coincidental effects.
 
 ![luminance by ROI](figures/fig2_luminance_by_roi.png)
 
