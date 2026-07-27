@@ -133,12 +133,29 @@ permuted — the true value sits hundreds of SDs above the null, confirming the
 betas↔image mapping end-to-end. (This validates the *pairing*, not decoding
 accuracy; the modest R² is expected from noisy single-trial fMRI and a small ROI.)
 
-**Statistics** (`stats`): ROI differences are tested across subjects, not read
-off the SEM bars. Each contrast uses an exact paired sign-flip permutation test
-(all 2⁸ sign combinations), a 95% bootstrap CI, and Benjamini-Hochberg FDR
-correction across the family of contrasts. With n = 8 the permutation p floors at
-2/2⁸ ≈ 0.008, so p = 0.008 means "more extreme than every other sign
-combination," not a marginal result.
+**Statistics** ([`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)):
+ROI differences are tested across subjects, not read off the SEM bars. Each
+contrast uses an exact paired sign-flip permutation test (all 2⁸ sign
+combinations), a 95% bootstrap CI, and Benjamini-Hochberg FDR correction across
+the family of contrasts. With n = 8 the permutation p floors at 2/2⁸ ≈ 0.008, so
+p = 0.008 means "more extreme than every other sign combination," not marginal.
+All eight contrasts:
+
+| contrast | Δ R² | p | q (FDR) | 95% CI |
+|---|---:|---:|---:|:---:|
+| color: concept − early | +0.012 | 0.008 | 0.01 | [0.007, 0.018] |
+| color: concept − V4 | +0.016 | 0.008 | 0.01 | [0.012, 0.020] |
+| color: early − V4 | +0.004 | 0.141 | 0.14 | [−0.001, 0.007] |
+| luminance: early − concept | +0.012 | 0.016 | 0.02 | [0.008, 0.015] |
+| luminance: early − V4 | +0.017 | 0.008 | 0.01 | [0.012, 0.021] |
+| luminance: concept − V4 | +0.005 | 0.008 | 0.01 | [0.003, 0.008] |
+| **bias: concept − early** | **+0.024** | **0.008** | **0.01** | **[0.021, 0.028]** |
+| bias: V4 − early | +0.014 | 0.008 | 0.01 | [0.010, 0.017] |
+
+Every contrast is significant after FDR except color early−V4 (a true tie); the
+dissociation interaction (bias: concept − early) is the largest and most reliable.
+
+![ROI contrasts (n=8): mean paired difference in R² with 95% bootstrap CIs; grey = not significant after FDR.](figures/fig4_contrasts.png)
 
 ## Results
 

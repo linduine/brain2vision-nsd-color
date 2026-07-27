@@ -152,8 +152,9 @@ which inflated the trial count and slightly leaked information across the
 train/test split. Restricting to the current-trial record (and dropping padding)
 fixed it. Ranges are now sane: ~30k trials/subject, image ids in [0, 73000).
 
-The recovered pairing was then validated by falsification (a label-permutation
-test, `alignment_check`): with the true alignment, V4 decodes color at R² = 0.045,
+The recovered pairing was then validated by falsification — a label-permutation
+test, the [`alignment_check`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/alignment_check.py)
+module: with the true alignment, V4 decodes color at R² = 0.045,
 versus R² ≈ 0 (−0.0003 ± 0.0001 over 20 shuffles) when the image labels are
 permuted. The true value sits hundreds of SDs above the shuffled null, confirming
 the betas↔image mapping end-to-end — a scrambled pairing would have collapsed to
@@ -169,13 +170,36 @@ lowered the absolute R² a little and tightened the error bars.
 
 ### Statistical inference {#sec-stats}
 
-ROI differences are tested across subjects (`stats`), not read off the SEM bars:
-each contrast uses an exact paired **sign-flip permutation test** (all 2^8 sign
-combinations), a 95% **bootstrap confidence interval**, and **Benjamini-Hochberg
-FDR** correction across the family of contrasts. With n = 8 the permutation
-*p* has a floor of 2/2⁸ ≈ 0.008 — so *p* = 0.008 means the observed difference is
-more extreme than all other sign combinations, i.e. as strong as eight subjects
-can show, not a marginal result.
+ROI differences are tested across subjects — the
+[`stats`](https://github.com/linduine/brain2vision-nsd-color/blob/main/brain2vision/stats.py)
+module — not read off the SEM bars. Each contrast uses an exact paired
+**sign-flip permutation test** (all 2⁸ sign combinations), a 95% **bootstrap
+confidence interval**, and **Benjamini-Hochberg FDR** correction across the family
+of contrasts. With n = 8 the permutation *p* has a floor of 2/2⁸ ≈ 0.008 — so
+*p* = 0.008 means the observed difference is more extreme than all other sign
+combinations, i.e. as strong as eight subjects can show, not a marginal result.
+
+All eight contrasts are in @tbl-stats and @fig-stats. Every ROI comparison is
+significant after FDR correction **except** early visual vs V4 on colour, which is
+a true tie — and the *bias* contrast (concept − early on colour-minus-luminance,
+the double-dissociation interaction) is the largest and most reliable of all.
+
+| contrast | Δ R² | *p* | *q* (FDR) | 95% CI |
+|---|---:|---:|---:|:---:|
+| colour: concept − early | +0.012 | 0.008 | 0.01 | [0.007, 0.018] |
+| colour: concept − V4 | +0.016 | 0.008 | 0.01 | [0.012, 0.020] |
+| colour: early − V4 | +0.004 | 0.141 | 0.14 | [−0.001, 0.007] |
+| luminance: early − concept | +0.012 | 0.016 | 0.02 | [0.008, 0.015] |
+| luminance: early − V4 | +0.017 | 0.008 | 0.01 | [0.012, 0.021] |
+| luminance: concept − V4 | +0.005 | 0.008 | 0.01 | [0.003, 0.008] |
+| **bias: concept − early** | **+0.024** | **0.008** | **0.01** | **[0.021, 0.028]** |
+| bias: V4 − early | +0.014 | 0.008 | 0.01 | [0.010, 0.017] |
+
+: Across-subject ROI contrasts (n = 8): mean paired difference in decoding R²,
+exact sign-flip permutation *p*, FDR-corrected *q*, and 95% bootstrap CI. "bias" =
+colour R² − luminance R² (the dissociation interaction). {#tbl-stats}
+
+![ROI contrasts (n = 8). Points are the mean paired difference in R²; bars are 95% bootstrap CIs; grey = not significant after FDR (CI touches 0). Every contrast except colour early−V4 excludes zero.](figures/fig4_contrasts.png){#fig-stats width=85%}
 
 ## Results & interpretation {#sec-results}
 
