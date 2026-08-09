@@ -50,7 +50,11 @@ Since this report, the study's central open question — *is higher visual corte
 - **Isoluminant control.** Colour without scene structure (NSD-synthetic) is not decodable.
 - **Robustness.** The dissociation is decoder-agnostic (ridge, elastic-net, linear SVM, RBF-kernel, MLP — no nonlinear gain), reliable across split-halves of the data (*r* ≈ 0.9; region ordering reproduces in 8/8 participants), and conservative with respect to signal quality (the higher region has the *lowest* noise-ceiling SNR yet the highest decoding).
 
+- **Region-specificity.** Decoding falls in every region when object identity is removed, so the critical test is the interaction: the collapse is significantly *larger* in higher visual cortex than in early cortex (physical ΔΔR² = +0.021, perceptual +0.030; both *p* = 0.008), and the ordering **reverses** — after residualisation, early visual cortex carries the most object-independent colour.
+
 The **double dissociation** reported below (colour → higher visual, luminance → early visual; interaction ΔΔR² = +0.024, *p* = 0.008) therefore stands and is extended. A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in preparation.
+
+*Note on numbers:* the R² values below use uniform pooling across the 11 colour bins. The follow-up work pools variance-weighted (so near-absent bins such as purple cannot dominate), which raises absolute values (e.g. concept colour R² = 0.045 → 0.067) without changing any ranking or conclusion; the dissociation interaction is +0.024 under either pooling.
 :::
 
 ## Motivation & hypotheses {#sec-hypotheses}

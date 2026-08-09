@@ -50,3 +50,7 @@ Thumbs.db
 # Backups & Quarto build output
 *.bak
 _site/
+
+# Quarto scratch output
+_article.md
+_convert.md

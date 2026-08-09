@@ -33,6 +33,34 @@ Getting there meant removing three confounds in turn — fixed regularization,
 then ROI voxel count, then single-subject noise — plus a data-alignment fix. The
 report walks through each, because which comparison you run changes the answer.
 
+## Update: confound-controlled follow-up (preprint in preparation)
+
+The report's central open question — *is higher visual cortex's colour advantage
+chromatic or semantic?* — has now been tested directly, with a battery of controls.
+**The colour advantage of higher visual cortex is largely object-bound.**
+
+- **Object-identity residualisation.** Removing the variance explained by object
+  presence (80 COCO categories) collapses colour decoding in every region, but
+  *significantly more* in higher visual cortex (interaction *p* = 0.008), and the
+  regional ordering **reverses** — early cortex then carries the most
+  object-independent colour. Holds for a physical *and* a perceptual colour target.
+- **Attention.** Colour decoding is not foreground-specific; it follows retinotopy.
+- **Decoder-agnostic.** Ridge, elastic-net, linear SVM, RBF-kernel and a regularised
+  MLP all reproduce the dissociation; no nonlinear decoder beats a linear one.
+- **Reliability.** Per-participant region profiles reproduce across image-disjoint
+  data halves (*r* ≈ 0.9; ordering reproduces in 8/8).
+- **Signal quality.** Higher visual cortex has the *lowest* noise-ceiling SNR yet the
+  *highest* colour decoding — data quality works against the effect, not for it.
+- **Isoluminant control.** No detectable hue decoding without scene structure, though
+  this control is low-powered and is reported with that caveat.
+
+New modules: `reliability` (split-half), `ncsnr_quality` (signal quality),
+`fg_bg_color_targets` (attention), `synthetic_decode` (isoluminant),
+`perceptual_color_targets` (colour naming).
+
+A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in
+preparation.
+
 ## Install
 
 ```bash
