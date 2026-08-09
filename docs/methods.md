@@ -17,6 +17,8 @@ Each item below is a module run with `python -m brain2vision.<name>`.
 | `color_targets`        | per-image 11-way basic-color distribution (HSV rules) |
 | `perceptual_color_targets` | 11-way color via van de Weijer learned color-names (scaffold) |
 | `luminance_targets`    | per-image 11-bin brightness distribution |
+| `semantic_targets`     | COCO object-category presence per image (colour-free, scaffold) |
+| `semantic_residual`    | residualise colour against semantics → chromatic-vs-semantic (scaffold) |
 | `color_decode`         | decode any target from an ROI + evaluate (single subject) |
 | `compare_rois`         | voxel-matched ROI comparison for one subject + plot |
 | `replicate_subjects`   | matched comparison across subjects (any target) — used for the findings |
@@ -269,6 +271,43 @@ rather than two independent main effects. These results populate the stats table
 and forest plot in the write-up ([`../REPORT.md`](../REPORT.md)); regenerate the
 forest plot (`figures/fig4_contrasts.png`) from the same summaries if the pipeline
 is re-run.
+
+## Chromatic vs semantic (variance partitioning)
+
+Higher visual cortex decodes colour best — but colour co-varies with *what is in
+the scene*, which higher visual cortex also encodes. This tests whether its colour
+advantage is genuinely chromatic or rides on semantics.
+
+The semantic axis must be **colour-free**: CLIP *image* embeddings leak colour
+(they see the pixels), so residualising against them would remove the brain's
+chromatic signal too. `semantic_targets` therefore uses **COCO object-category
+presence** (80-dim: which objects are in the image, regardless of colour). A
+colour-light alternative is CLIP *text* of the captions (`clip_targets --captions`).
+
+Pipeline:
+
+```bash
+# 1) colour-free semantic feature (COCO categories)
+python -m brain2vision.semantic_targets --out data/semantic_targets.npy
+
+# 2) remove the semantics-explained part of colour -> residual (chromatic) colour
+python -m brain2vision.semantic_residual \
+    --color data/color_targets.npy --semantic data/semantic_targets.npy \
+    --out data/color_targets_residual.npy
+
+# 3) re-run the ROI comparison on the residual colour
+python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
+    --target data/color_targets_residual.npy --out roi_colorresid_8subj.png
+
+# 4) test the differences (as for the main result)
+python -m brain2vision.stats --color roi_colorresid_8subj_summary.npy \
+    --luminance roi_luminance_8subj_summary.npy
+```
+
+`semantic_residual` also prints the out-of-sample R²(colour ~ semantics), which
+quantifies the confound itself. Interpretation of step 3: if higher visual cortex
+still leads on *residual* colour, its advantage is chromatic; if that lead
+collapses toward early/V4, it was semantic. (Scaffolded; not yet run.)
 
 ## Shared-subject model (alternative pooling)
 

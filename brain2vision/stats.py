@@ -88,12 +88,95 @@ def run(color_npy, luminance_npy):
     return tests, stats, qs
 
 
+def run_fgbg(fg_npy, bg_npy):
+    """
+    Stats for the foreground-vs-background colour test (the attention control).
+    Reports, per ROI:
+      * FG-BG (foreground bias): >0 would mean colour decoding favours the
+        attended foreground -- the prediction of the attention account;
+      * and the retinotopy INTERACTION: whether early visual gains more from the
+        (peripheral) background than the foveally-biased concept / V4 do.
+    """
+    F = np.load(fg_npy, allow_pickle=True).item()
+    B = np.load(bg_npy, allow_pickle=True).item()
+    fg = {r: np.array(F["agg"][r]["ov"]) for r in ROIS}
+    bg = {r: np.array(B["agg"][r]["ov"]) for r in ROIS}
+    n = len(fg[ROIS[0]])
+    sem = lambda a: a.std(ddof=1) / np.sqrt(len(a))
+    print(f"n subjects = {n}   (exact sign-flip p floor = {2/2**n:.4f})\n")
+    print(f"{'ROI':<12}{'foreground R2':>16}{'background R2':>16}")
+    for r in ROIS:
+        print(f"{r:<12}{fg[r].mean():+9.3f}+/-{sem(fg[r]):.3f}"
+              f"{bg[r].mean():+9.3f}+/-{sem(bg[r]):.3f}")
+    print()
+
+    dbf = {r: bg[r] - fg[r] for r in ROIS}                 # background advantage
+    tests = []
+    for r in ROIS:                                          # attention: fg>bg?
+        tests.append((f"FG-BG: {r} (foreground bias)", fg[r] - bg[r]))
+    tests.append(("INTERACTION: (bg-fg) early - concept", dbf["early_v1v3"] - dbf["concept"]))
+    tests.append(("INTERACTION: (bg-fg) early - v4",      dbf["early_v1v3"] - dbf["v4_color"]))
+
+    stats = [_paired(d) for _, d in tests]
+    qs = _bh([s[1] for s in stats])
+    print(f"{'contrast':<40}{'mean d':>9}{'p':>8}{'q(FDR)':>8}   95% CI")
+    for (name, _), (obs, p, lo, hi), q in zip(tests, stats, qs):
+        print(f"{name:<40}{obs:+9.4f}{p:8.3f}{q:8.3f}   [{lo:+.4f}, {hi:+.4f}]")
+    print("\npaired sign-flip permutation p, 20k-bootstrap 95% CI, BH-FDR q "
+          f"across {len(tests)} tests.")
+    print("Reading: FG-BG ~ 0 (or negative) => colour decoding is NOT foreground-"
+          "specific (attention account not supported). Positive early-vs-concept "
+          "interaction => early visual gains from the peripheral background "
+          "(retinotopy).")
+    return tests, stats, qs
+
+
+def run_residual(raw_npy, residual_npy):
+    """
+    Test the semantic collapse: is raw-colour decoding significantly higher than
+    residual-colour decoding, per ROI (paired across subjects)? Both summaries
+    must be the same colour target decoded raw vs residualized-against-semantics.
+    """
+    R = np.load(raw_npy, allow_pickle=True).item()
+    S = np.load(residual_npy, allow_pickle=True).item()
+    raw = {r: np.array(R["agg"][r]["ov"]) for r in ROIS}
+    res = {r: np.array(S["agg"][r]["ov"]) for r in ROIS}
+    n = len(raw[ROIS[0]])
+    sem = lambda a: a.std(ddof=1) / np.sqrt(len(a))
+    print(f"n subjects = {n}   (exact sign-flip p floor = {2/2**n:.4f})\n")
+    print(f"{'ROI':<12}{'raw R2':>14}{'residual R2':>14}")
+    for r in ROIS:
+        print(f"{r:<12}{raw[r].mean():+9.3f}+/-{sem(raw[r]):.3f}"
+              f"{res[r].mean():+9.3f}+/-{sem(res[r]):.3f}")
+    print()
+    tests = [(f"COLLAPSE: {r} (raw - residual)", raw[r] - res[r]) for r in ROIS]
+    stats = [_paired(d) for _, d in tests]
+    qs = _bh([s[1] for s in stats])
+    print(f"{'contrast':<38}{'mean d':>9}{'p':>8}{'q(FDR)':>8}   95% CI")
+    for (name, _), (obs, p, lo, hi), q in zip(tests, stats, qs):
+        print(f"{name:<38}{obs:+9.4f}{p:8.3f}{q:8.3f}   [{lo:+.4f}, {hi:+.4f}]")
+    print("\nA significant positive 'raw - residual' = the colour advantage drops "
+          "significantly when object identity is removed.")
+    return tests, stats, qs
+
+
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--color", required=True, help="roi_color_*_summary.npy")
-    p.add_argument("--luminance", required=True, help="roi_luminance_*_summary.npy")
+    p.add_argument("--color", help="roi_color_*_summary.npy")
+    p.add_argument("--luminance", help="roi_luminance_*_summary.npy")
+    p.add_argument("--fg", help="roi_fgcolor_*_summary.npy")
+    p.add_argument("--bg", help="roi_bgcolor_*_summary.npy")
+    p.add_argument("--raw", help="raw-colour roi_*_summary.npy (with --residual)")
+    p.add_argument("--residual", help="residual-colour roi_*_summary.npy (with --raw)")
     args = p.parse_args()
-    run(args.color, args.luminance)
+    if args.fg and args.bg:
+        run_fgbg(args.fg, args.bg)
+    elif args.raw and args.residual:
+        run_residual(args.raw, args.residual)
+    elif args.color and args.luminance:
+        run(args.color, args.luminance)
+    else:
+        p.error("give --color+--luminance, --fg+--bg, or --raw+--residual")
 
 
 if __name__ == "__main__":

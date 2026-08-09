@@ -27,12 +27,12 @@ dependencies = [
 clip = ["open_clip_torch>=2.24", "torch>=2.0"]
 # color decoding experiments (ridge/MLP + shared-subject model + plots)
 color = ["scikit-learn>=1.3", "matplotlib>=3.7", "torch>=2.0"]
-# raw-NSD fine-grained ROIs
-rawnsd = ["nibabel>=5.0"]
+# raw-NSD fine-grained ROIs + NSD-synthetic (nibabel for masks, scipy for design .mat)
+rawnsd = ["nibabel>=5.0", "scipy>=1.10"]
 # everything
 all = [
     "open_clip_torch>=2.24", "torch>=2.0", "scikit-learn>=1.3",
-    "matplotlib>=3.7", "nibabel>=5.0",
+    "matplotlib>=3.7", "nibabel>=5.0", "scipy>=1.10",
 ]
 
 [project.urls]

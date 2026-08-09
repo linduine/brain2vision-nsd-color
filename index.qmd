@@ -40,6 +40,19 @@ within each region, `concept` and `v4_color` are ~2× color-biased, while
 
 ![Functional dissociation between color and luminance decoding, by ROI (all 8 subjects, each ROI matched to 397 voxels; error bars are across-subject SEM). Higher visual cortex is strongly color-biased; early visual cortex is balanced; V4 is color-biased but weak on both raw measures.](figures/fig3_dissociation.png){#fig-dissociation width=70%}
 
+::: {.callout-note}
+## Update (2026): confound-controlled follow-up — a preprint is in preparation
+
+Since this report, the study's central open question — *is higher visual cortex's colour advantage chromatic or semantic?* (@sec-nextsteps) — has been tested directly, together with a full battery of confound controls. **The headline: the colour advantage of higher visual cortex is largely object-bound.**
+
+- **Object-identity residualisation.** Removing the variance explained by object presence (80 COCO categories) collapses the higher-visual colour advantage by ~86%, and the collapse holds for both a physical and a perceptual (van de Weijer) colour target (all *q* = 0.008).
+- **Attention control.** Colour decoding is not foreground-specific; it follows retinotopy.
+- **Isoluminant control.** Colour without scene structure (NSD-synthetic) is not decodable.
+- **Robustness.** The dissociation is decoder-agnostic (ridge, elastic-net, linear SVM, RBF-kernel, MLP — no nonlinear gain), reliable across split-halves of the data (*r* ≈ 0.9; region ordering reproduces in 8/8 participants), and conservative with respect to signal quality (the higher region has the *lowest* noise-ceiling SNR yet the highest decoding).
+
+The **double dissociation** reported below (colour → higher visual, luminance → early visual; interaction ΔΔR² = +0.024, *p* = 0.008) therefore stands and is extended. A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in preparation.
+:::
+
 ## Motivation & hypotheses {#sec-hypotheses}
 
 Area V4 has long been described as the brain's "colour centre." The claim traces
@@ -303,7 +316,16 @@ category-selective area.
 ## Next steps {#sec-nextsteps}
 
 This study establishes the ROI-level dissociation; several follow-ups would
-sharpen it, and the repository *begins* the groundwork for the first.
+sharpen it, and the repository *begins* the groundwork for them.
+
+- **Is higher visual cortex's colour advantage chromatic or semantic?** Colour
+  co-varies with which objects are present, which higher visual cortex encodes, so
+  its colour lead may ride on semantics. Scaffolded: `semantic_targets` builds a
+  colour-free semantic feature (COCO object-category presence — deliberately *not*
+  CLIP image features, which leak colour), and `semantic_residual` removes the
+  semantics-explained part of colour cross-validated, leaving residual (chromatic)
+  colour to re-decode per ROI. If higher visual still leads on residual colour the
+  advantage is chromatic; if it collapses, semantic. **Update: now run (see the callout at the top).** Residualising colour against COCO object presence collapses the higher-visual advantage by ~86% (*q* = 0.008, for both physical and perceptual colour targets), indicating the advantage is largely semantic/object-bound rather than chromatic.
 
 - **Split the `concept` pool into category-selective regions.** The natural next
   question is *which* higher-visual region drives the colour advantage — e.g.

@@ -265,6 +265,14 @@ The pattern maps cleanly onto known visual neuroscience:
 This study establishes the ROI-level dissociation; the repository *begins* the
 groundwork for taking it further, but these analyses are not yet done:
 
+- **Chromatic vs semantic (the key open question).** Higher visual cortex's colour
+  advantage may ride on semantics (colour co-varies with object identity, which it
+  encodes). Scaffolded: `semantic_targets` builds a colour-free semantic feature
+  (COCO category presence — not CLIP image features, which leak colour) and
+  `semantic_residual` cross-validates out the semantics-explained part of colour,
+  leaving residual chromatic colour to re-decode per ROI. If higher visual still
+  leads on residual colour the advantage is chromatic; if it collapses, semantic.
+
 - **Split `concept` into category-selective regions** (FFA, PPA, EBA, VWFA, …) to
   ask *which* higher-visual area drives the color advantage — e.g. whether
   scene-selective cortex (PPA) carries the scene-color signal. The `raw_nsd`

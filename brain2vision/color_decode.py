@@ -44,6 +44,7 @@ Usage
 """
 
 import io
+import gc
 import tarfile
 import argparse
 import numpy as np
@@ -105,44 +106,44 @@ def read_behav_alignment(subj, cache_dir=None):
 # --------------------------------------------------------------------------- #
 # Assemble X (ROI betas) and y (target)
 # --------------------------------------------------------------------------- #
-def build_xy(subj, color_targets_npy, rois=("V4",), ids_npy=None, betas_npy=None):
+def build_xy(subj, color_targets_npy, rois=("V4",), ids_npy=None, betas_npy=None,
+             return_ids=False):
+    import gc
     color = np.load(color_targets_npy)
     ct_ids = np.load(color_targets_npy.replace(".npy", "_ids.npy"))
     id_to_row = {int(i): k for k, i in enumerate(ct_ids)}
 
     if ids_npy and betas_npy:                      # raw-NSD path (user-supplied)
         nsd_ids = np.load(ids_npy)
-        X = np.load(betas_npy).astype(np.float32)
         is_test = _shared1000_mask(nsd_ids)
-        betas_rows = np.arange(len(nsd_ids))
+        keep = np.array([int(i) in id_to_row for i in nsd_ids])   # filter first
+        nsd_ids, is_test = nsd_ids[keep], is_test[keep]
+        X = np.load(betas_npy, mmap_mode="r")[keep].astype(np.float32, copy=False)
     else:                                           # MindEye2 path
         betas_rows, nsd_ids, is_test = read_behav_alignment(subj)
+        # Drop trials whose image has no colour target BEFORE materialising X,
+        # so we never build rows we'd only discard (halves peak memory).
+        keep = np.array([int(i) in id_to_row for i in nsd_ids])
+        betas_rows, nsd_ids, is_test = betas_rows[keep], nsd_ids[keep], is_test[keep]
         from huggingface_hub import hf_hub_download
         import h5py
-        roi_mask = load_roi_masks(subj, list(rois))  # boolean over nsdgeneral
+        roi_mask = load_roi_masks(subj, list(rois))   # boolean over nsdgeneral
         bpath = hf_hub_download(REPO_ID, _betas_filename(subj), repo_type="dataset")
         with h5py.File(bpath, "r") as f:
             dset = f[_first_dataset_key(f)]
-            # Some h5py builds reject ANY index array on the row axis (even a
-            # sorted, unique one). So we pass h5py ONLY plain slices: read the
-            # dataset in row-chunks, keep just the ROI columns (NumPy boolean
-            # index on the in-memory chunk), and assemble the full ROI matrix.
-            n_all = dset.shape[0]
-            n_roi = int(roi_mask.sum())
+            # h5py can reject index arrays on the row axis, so read plain row
+            # slices and keep only ROI columns on the in-memory chunk.
+            n_all = dset.shape[0]; n_roi = int(roi_mask.sum())
             roi_all = np.empty((n_all, n_roi), dtype=np.float32)
             step = 2000
             for i in range(0, n_all, step):
-                chunk = dset[i:i + step]              # plain slice -> always OK
-                roi_all[i:i + step] = chunk[:, roi_mask]
-        # all fancy selection happens in NumPy, where any order/duplicates are fine
-        X = roi_all[betas_rows].astype(np.float32)
+                roi_all[i:i + step] = dset[i:i + step][:, roi_mask]
+        X = roi_all[betas_rows]        # already float32; kept trials only
+        del roi_all; gc.collect()      # free the ~1 GB full-ROI matrix now
 
-    # y from color targets, dropping trials whose image lacks a target
-    keep = np.array([i in id_to_row for i in nsd_ids])
-    X, nsd_ids, is_test = X[keep], nsd_ids[keep], is_test[keep]
-    y = np.stack([color[id_to_row[int(i)]] for i in nsd_ids])
+    y = np.stack([color[id_to_row[int(i)]] for i in nsd_ids]).astype(np.float32)
     print(f"X={X.shape}  y={y.shape}  test={int(is_test.sum())}")
-    return X, y, is_test
+    return (X, y, is_test, nsd_ids) if return_ids else (X, y, is_test)
 
 
 def _shared1000_mask(nsd_ids):
@@ -155,9 +156,20 @@ def _shared1000_mask(nsd_ids):
 # --------------------------------------------------------------------------- #
 # Models + evaluation
 # --------------------------------------------------------------------------- #
-def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None):
+def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None,
+               r2_weighting="uniform"):
     # `labels` names the target columns (default: the 11 colors). Passing a
     # different list lets this decode any target, e.g. luminance bins.
+    #
+    # r2_weighting controls how the per-target R^2 values are pooled into the
+    # overall R^2:
+    #   "uniform"  -> plain mean (default; but near-absent targets such as the
+    #                 "purple" colour bin have ~zero variance, are impossible to
+    #                 predict, and their large negative R^2 can dominate the mean);
+    #   "variance" -> variance-weighted (sklearn), so a colour contributes in
+    #                 proportion to how much it actually varies -> rare, near-
+    #                 constant colours barely count. Much more stable on small /
+    #                 selected image subsets.
     if labels is None:
         from brain2vision.color_targets import COLOR_NAMES
         labels = COLOR_NAMES
@@ -175,24 +187,99 @@ def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None):
         # alpha over-penalizes small ROIs and under-penalizes large ones, which
         # is a dimensionality confound when comparing ROIs of different sizes.
         from sklearn.linear_model import RidgeCV
-        alphas = np.logspace(1, 6, 12)
-        reg = RidgeCV(alphas=alphas).fit(Xtr, ytr)
+        reg = RidgeCV(alphas=np.logspace(1, 6, 12)).fit(Xtr, ytr)
         pred = reg.predict(Xte)
         print(f"RidgeCV selected alpha = {float(np.atleast_1d(reg.alpha_)[0]):.1f}")
-    elif model == "mlp":
-        from sklearn.neural_network import MLPRegressor
-        reg = MLPRegressor(hidden_layer_sizes=(256,), max_iter=200).fit(Xtr, ytr)
+    elif model == "elasticnet":
+        # Sparse LINEAR decoder: shrinks AND zeros out voxels. Robustness check
+        # within linear models — does a different regularizer give the same answer?
+        import inspect
+        from sklearn.linear_model import MultiTaskElasticNetCV
+        kw = dict(l1_ratio=0.5, cv=3, max_iter=3000, n_jobs=1)  # n_jobs=1: avoid per-core data copies
+        # 'n_alphas' was renamed to 'alphas' (now accepts an int) in recent sklearn
+        params = inspect.signature(MultiTaskElasticNetCV).parameters
+        kw["n_alphas" if "n_alphas" in params else "alphas"] = 8
+        reg = MultiTaskElasticNetCV(**kw).fit(Xtr, ytr)
         pred = reg.predict(Xte)
+    elif model == "kernel":
+        # NONLINEAR via an RBF-kernel approximation (Nystroem) + ridge. The
+        # Nystroem features scale to many trials where an exact kernel matrix
+        # (O(n^2)) would not, while still capturing curved relationships a linear
+        # decoder misses.
+        from sklearn.kernel_approximation import Nystroem
+        from sklearn.linear_model import RidgeCV
+        ny = Nystroem(kernel="rbf", gamma=1.0 / Xtr.shape[1],
+                      n_components=min(500, Xtr.shape[0]), random_state=0)
+        Ztr = ny.fit_transform(Xtr); Zte = ny.transform(Xte)
+        reg = RidgeCV(alphas=np.logspace(1, 6, 12)).fit(Ztr, ytr)
+        pred = reg.predict(Zte)
+    elif model == "svr":
+        # Linear Support Vector Regression -- the canonical MVPA decoder. Like
+        # ridge it is LINEAR with L2 regularization, but uses an epsilon-
+        # insensitive loss instead of squared error. Included because a linear
+        # SVM is the most widely cited MVPA decoder; expect it to track ridge
+        # closely (both are L2-linear). One SVR per colour (multi-output); the
+        # penalty C is picked on an internal validation split.
+        from sklearn.svm import LinearSVR
+        from sklearn.multioutput import MultiOutputRegressor
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import r2_score as _r2
+
+        def _svr(C):
+            return MultiOutputRegressor(
+                LinearSVR(C=C, loss="squared_epsilon_insensitive", dual=False, max_iter=20000, tol=1e-4, random_state=0))
+
+        Xa, Xv, ya, yv = train_test_split(Xtr, ytr, test_size=0.2, random_state=0)
+        best_C, best_s = None, -np.inf
+        for C in (0.01, 0.1, 1.0, 10.0):
+            s = _r2(yv, _svr(C).fit(Xa, ya).predict(Xv),
+                    multioutput="variance_weighted")
+            if s > best_s:
+                best_s, best_C = s, C
+        reg = _svr(best_C).fit(Xtr, ytr)               # refit on full train split
+        pred = reg.predict(Xte)
+        print(f"LinearSVR selected C = {best_C} (val R2 = {best_s:+.3f})")
+    elif model == "mlp":
+        # NONLINEAR: a small, REGULARIZED neural net. An unregularized MLP
+        # overfits badly on a few hundred high-dimensional trials (that is why
+        # the (256,)/default-penalty version scored a large negative R2). The
+        # "fair" MLP here (a) uses a small hidden layer, (b) picks the L2 penalty
+        # alpha on an internal validation split, and (c) uses early stopping with
+        # patience. If even this cannot beat predicting the mean, that is
+        # evidence against exploitable nonlinear structure -- not an untuned-model
+        # artifact.
+        from sklearn.neural_network import MLPRegressor
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import r2_score as _r2
+
+        def _mlp(a):
+            return MLPRegressor(hidden_layer_sizes=(64,), alpha=a,
+                                max_iter=800, early_stopping=True,
+                                validation_fraction=0.15, n_iter_no_change=20,
+                                random_state=0)
+
+        Xa, Xv, ya, yv = train_test_split(Xtr, ytr, test_size=0.2, random_state=0)
+        best_a, best_s = None, -np.inf
+        for a in (1e-3, 1e-2, 1e-1, 1.0, 10.0):
+            s = _r2(yv, _mlp(a).fit(Xa, ya).predict(Xv),
+                    multioutput="variance_weighted")   # robust to near-absent bins
+            if s > best_s:
+                best_s, best_a = s, a
+        reg = _mlp(best_a).fit(Xtr, ytr)               # refit on full train split
+        pred = reg.predict(Xte)
+        print(f"MLP selected alpha = {best_a} (val R2 = {best_s:+.3f})")
     else:
-        raise ValueError(model)
+        raise ValueError(f"unknown model '{model}' "
+                         "(ridge | elasticnet | kernel | mlp)")
 
     # metrics
     from sklearn.metrics import r2_score
     r2 = r2_score(yte, pred, multioutput="raw_values")
-    overall_r2 = r2_score(yte, pred)
+    mo = "variance_weighted" if r2_weighting == "variance" else "uniform_average"
+    overall_r2 = float(r2_score(yte, pred, multioutput=mo))
     top1 = (pred.argmax(1) == yte.argmax(1)).mean()   # dominant-bin accuracy
 
-    print(f"\n=== decode ({model}) ===")
+    print(f"\n=== decode ({model}, R2 pooling={r2_weighting}) ===")
     print(f"overall R^2 : {overall_r2:.3f}")
     print(f"dominant-bin top-1 acc : {top1:.3f} "
           f"(chance ~= {1/len(labels):.3f})")
@@ -207,7 +294,9 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--subj", type=int, default=1)
     p.add_argument("--color-targets", required=True)
-    p.add_argument("--model", choices=["ridge", "mlp"], default="ridge")
+    p.add_argument("--model",
+                   choices=["ridge", "elasticnet", "kernel", "svr", "mlp"],
+                   default="ridge")
     p.add_argument("--alpha", type=float, default=1000.0)
     p.add_argument("--ids-npy", help="(raw-NSD path) nsd_id per betas row")
     p.add_argument("--betas-npy", help="(raw-NSD path) V4 betas array")

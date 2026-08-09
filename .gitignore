@@ -1,48 +1,50 @@
-# ---- data (never commit NSD/COCO data or derived arrays) ----
-data/*
-!data/.gitkeep
-!data/README.md
+# ---------------------------------------------------------------------------
+# NSD / neural DATA — never commit. The NSD Terms of Use forbid redistributing
+# betas or masks, and these files are large and regenerable anyway.
+# ---------------------------------------------------------------------------
+data/
+nsd_cache/
+coco_cache/
 *.hdf5
 *.h5
 *.nii
 *.nii.gz
+*.mat
+*.part
+w2c.*
+
+# Derived arrays / decoding summaries (regenerable; large).
 *.npy
-*.npz
-*.json
-!**/package.json
-nsd_cache/
-coco_cache/
-*.pt
-*.pth
-*.ckpt
-*.safetensors
 
-# ---- outputs ----
+# Rendered figures / documents (regenerable).
 *.png
-!docs/*.png
-# keep committed result figures (inline comments are NOT allowed on the rule line)
-!figures/*.png
-*.log
-runs/
-outputs/
+*.jpg
+*.pdf
 
-# ---- python ----
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.egg-info/
-.eggs/
 build/
 dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
 .venv/
 venv/
 env/
-.ipynb_checkpoints/
 
-# ---- quarto build artifacts ----
-/_site/
-/.quarto/
-
-# ---- os / editors ----
+# OS / editor cruft
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
+
+/.quarto/
+**/*.quarto_ipynb
+
+# Backups & Quarto build output
+*.bak
+_site/
