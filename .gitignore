@@ -16,10 +16,12 @@ w2c.*
 # Derived arrays / decoding summaries (regenerable; large).
 *.npy
 
-# Rendered figures / documents (regenerable).
-*.png
-*.jpg
-*.pdf
+# Regenerable output figures the decoding scripts write to the repo ROOT
+# (roi_*.png, reliability_*.png, ncsnr_*.png, ...). The Quarto site's assets in
+# figures/ ARE version-controlled and are deliberately NOT ignored.
+/*.png
+/*.jpg
+/*.pdf
 
 # Python
 __pycache__/
