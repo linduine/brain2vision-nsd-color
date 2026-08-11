@@ -27,6 +27,13 @@ Result files are named `roi_<target><variant>_<n>subj_summary.npy`:
 | `_clean` / `_cleanvw` | restricted to the clean fg/bg image subset (see §4) |
 | `_elasticnet`, `_kernel`, `_svr`, `_mlp`, `_mlp2` | alternative decoders |
 
+> **Why luminance is also `_vw`.** The double-dissociation interaction subtracts a
+> luminance R² from a colour R², so the two targets **must be pooled identically**
+> for it to be interpretable. Colour requires variance weighting (see below), so
+> luminance uses it too. This costs nothing: the 11 brightness bins are evenly
+> populated, so uniform and variance pooling agree to ~0.0015 (0.0168 vs 0.0154),
+> and the interaction is +0.024 either way.
+
 > **Why `_vw` matters.** Several colours (notably purple) are near-absent in most
 > images, so a uniform mean over per-colour R² is dominated by unpredictable
 > bins. Variance weighting lets each colour contribute in proportion to how much
@@ -137,10 +144,56 @@ python -m brain2vision.stats --fg roi_fgcolor_cleanvw_8subj_summary.npy \
                              --bg roi_bgcolor_cleanvw_8subj_summary.npy
 ```
 
-> The exact flags for some early runs were not logged. Where a flag is uncertain
-> it has been **reconstructed from the saved outputs** (e.g. the fg/bg coverage
-> bounds were read back from `data/fgbg_clean_coverage.npy`). Re-running the
-> commands above reproduces the reported values.
+### 5.1 How these commands were reconstructed
+
+Runs made after the checkpointing code was added **store their own configuration**
+inside the `.npy`. Earlier runs do not, so their flags were recovered from
+evidence in the saved outputs. Each row below states which.
+
+| File | `--model` | `--r2-weighting` | `k` | Evidence |
+|---|---|---|---|---|
+| `roi_color_vw` | ridge | variance | 397 | pooling inferred (see 5.2) |
+| `roi_color_elasticnet` | elasticnet | variance | 397 | **stored in file** |
+| `roi_color_svr` | svr | variance | 397 | **stored in file** |
+| `roi_color_kernel` | kernel | variance | 397 | **stored in file** |
+| `roi_color_mlp2` | mlp | variance | 397 | **stored in file** |
+| `roi_color_mlp` (superseded) | mlp | variance | 397 | **stored in file** |
+| `roi_luminance_vw` | ridge | variance | 397 | **stored in file** |
+| `reliability_8subj` | ridge | variance | 397 | **stored in file** |
+| `roi_colorresid_vw` | ridge | variance | — | pooling inferred |
+| `roi_pcolor_vw`, `roi_pcolorresid_vw` | ridge | variance | — | pooling inferred |
+| `roi_fgcolor_cleanvw`, `roi_bgcolor_cleanvw` | ridge | variance | — | pooling inferred; subset from `fgbg_clean_*` |
+| `roi_*_8subj` (no suffix) | ridge | **uniform** | — | pooling inferred |
+| `roi_fgcolor_clean`, `roi_bgcolor_clean` | ridge | **uniform** | — | pooling inferred |
+
+`--subjects 1 2 3 4 5 6 7 8` for every file except `roi_color_7subj` (n = 7),
+confirmed from the `subjects` field. The target is identified by the `labels`
+field (11 colour terms vs `L0…L10` luminance bins).
+
+**Not recoverable:** `--n-draws` is not stored and leaves no trace in the output.
+Reported linear runs used 25 and nonlinear runs 3; the result is insensitive to
+this (draw-to-draw variance is far smaller than between-participant variance).
+
+### 5.2 Reconstructing the pooling flag empirically
+
+`replicate_subjects` saves both the per-target R² (`agg[roi]["per"]`) and the
+pooled overall R² (`agg[roi]["ov"]`). So the flag can be tested directly:
+
+```python
+import numpy as np
+d   = np.load("roi_color_vw_8subj_summary.npy", allow_pickle=True).item()
+per = np.array(d["agg"]["concept"]["per"])   # per-colour R², per subject
+ov  = np.array(d["agg"]["concept"]["ov"])    # pooled R², per subject
+np.allclose(per.mean(1), ov, atol=2e-3)      # True -> uniform; False -> variance-weighted
+```
+
+For **colour** targets this is decisive: near-absent bins (purple) make uniform
+pooling differ sharply from variance weighting (e.g. concept 0.045 vs 0.067).
+
+⚠️ For **luminance** it is *not* decisive — the 11 brightness bins are evenly
+populated, so the two poolings agree to ~0.0015 (0.0168 vs 0.0154). The stored
+config in `roi_luminance_vw` confirms `variance`. This is also why the
+colour-minus-luminance interaction is unchanged (+0.024) under either pooling.
 
 ---
 

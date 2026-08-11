@@ -54,3 +54,7 @@ _site/
 # Quarto scratch output
 _article.md
 _convert.md
+
+# Generated preview images written by view_synthetic / reconstruct
+figures/synth_*.png
+figures/*_preview.png
