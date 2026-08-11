@@ -50,6 +50,6 @@ cortex may partly be reading object identity.
 ## Status
 
 A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in
-preparation. Provenance of every number: [`PROVENANCE.md`](PROVENANCE.md). Methods notes: [`docs/methods.md`](docs/methods.md). How to run:
+preparation. Provenance of every number: [`PROVENANCE.md`](PROVENANCE.md). Code verification: [`test_analysis.py`](test_analysis.py) (26 planted-ground-truth checks). Methods notes: [`docs/methods.md`](docs/methods.md). How to run:
 [`README.md`](README.md). Code is MIT-licensed; the data is **not** — see
 [`DATA_TERMS.md`](DATA_TERMS.md).
