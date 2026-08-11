@@ -61,6 +61,11 @@ New modules: `reliability` (split-half), `ncsnr_quality` (signal quality),
 A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in
 preparation.
 
+> **Reproducing the paper?** [`PROVENANCE.md`](PROVENANCE.md) maps every reported number to
+> the exact `*_summary.npy` file and the command that produced it, and flags which of the
+> similarly-named result files are superseded. `results_manifest.json` is the machine-readable
+> version.
+
 ## Install
 
 ```bash

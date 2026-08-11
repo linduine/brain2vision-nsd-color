@@ -1,0 +1,245 @@
+{
+  "canonical": {
+    "roi_bgcolor_cleanvw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0333,
+        "v4_color": 0.0196,
+        "concept": 0.029
+      },
+      "n_subjects": 8,
+      "used_for": "Fig 3 background (clean subset)"
+    },
+    "roi_color_elasticnet_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0531,
+        "v4_color": 0.0474,
+        "concept": 0.0654
+      },
+      "n_subjects": 8,
+      "used_for": "Table 1 elastic-net"
+    },
+    "roi_color_kernel_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0454,
+        "v4_color": 0.0384,
+        "concept": 0.0526
+      },
+      "n_subjects": 8,
+      "used_for": "Table 1 RBF kernel"
+    },
+    "roi_color_mlp2_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0505,
+        "v4_color": 0.0464,
+        "concept": 0.0651
+      },
+      "n_subjects": 8,
+      "used_for": "Table 1 MLP (regularised)"
+    },
+    "roi_color_svr_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0494,
+        "v4_color": 0.045,
+        "concept": 0.0618
+      },
+      "n_subjects": 8,
+      "used_for": "Table 1 linear SVR"
+    },
+    "roi_color_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0541,
+        "v4_color": 0.0493,
+        "concept": 0.0667
+      },
+      "n_subjects": 8,
+      "used_for": "Fig 1; Table 1 ridge; main colour decoding"
+    },
+    "roi_colorresid_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0178,
+        "v4_color": 0.0117,
+        "concept": 0.0093
+      },
+      "n_subjects": 8,
+      "used_for": "Fig 2 collapse (physical)"
+    },
+    "roi_fgcolor_cleanvw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0175,
+        "v4_color": 0.0194,
+        "concept": 0.0222
+      },
+      "n_subjects": 8,
+      "used_for": "Fig 3 foreground (clean subset)"
+    },
+    "roi_luminance_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0265,
+        "v4_color": 0.0101,
+        "concept": 0.0154
+      },
+      "n_subjects": 8,
+      "used_for": "luminance; dissociation interaction"
+    },
+    "roi_pcolor_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0662,
+        "v4_color": 0.0675,
+        "concept": 0.09
+      },
+      "n_subjects": 8,
+      "used_for": "Fig 2 raw (perceptual)"
+    },
+    "roi_pcolorresid_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0182,
+        "v4_color": 0.016,
+        "concept": 0.0121
+      },
+      "n_subjects": 8,
+      "used_for": "Fig 2 collapse (perceptual)"
+    },
+    "roi_synth_chromID_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.1588,
+        "v4_color": 0.114,
+        "concept": 0.1159
+      },
+      "n_subjects": 8,
+      "used_for": "S7 positive control: chromatic image ID"
+    },
+    "roi_synth_hue_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": -0.1169,
+        "v4_color": -0.0729,
+        "concept": -0.0657
+      },
+      "n_subjects": 8,
+      "used_for": "S7 synthetic hue null"
+    },
+    "roi_synth_identity_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.1582,
+        "v4_color": 0.0879,
+        "concept": 0.0458
+      },
+      "n_subjects": 8,
+      "used_for": "S7 positive control: image identity"
+    },
+    "roi_synth_pattern_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.2166,
+        "v4_color": 0.1637,
+        "concept": 0.1283
+      },
+      "n_subjects": 8,
+      "used_for": "S7 positive control: noise pattern"
+    }
+  },
+  "superseded": {
+    "roi_bgcolor_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0266,
+        "v4_color": 0.0193,
+        "concept": 0.033
+      },
+      "n_subjects": 8
+    },
+    "roi_bgcolor_clean_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": -0.0226,
+        "v4_color": -0.0343,
+        "concept": -0.029
+      },
+      "n_subjects": 8
+    },
+    "roi_bgcolor_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.044,
+        "v4_color": 0.0339,
+        "concept": 0.0507
+      },
+      "n_subjects": 8
+    },
+    "roi_color_7subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0327,
+        "v4_color": 0.0294,
+        "concept": 0.0451
+      },
+      "n_subjects": 7
+    },
+    "roi_color_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0323,
+        "v4_color": 0.0288,
+        "concept": 0.0446
+      },
+      "n_subjects": 8
+    },
+    "roi_color_mlp_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": -0.2677,
+        "v4_color": -0.2613,
+        "concept": -0.3081
+      },
+      "n_subjects": 8
+    },
+    "roi_colorresid_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0063,
+        "v4_color": 0.0008,
+        "concept": 0.0007
+      },
+      "n_subjects": 8
+    },
+    "roi_fgcolor_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0102,
+        "v4_color": 0.0181,
+        "concept": 0.0265
+      },
+      "n_subjects": 8
+    },
+    "roi_fgcolor_clean_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": -0.0174,
+        "v4_color": -0.0179,
+        "concept": -0.0149
+      },
+      "n_subjects": 8
+    },
+    "roi_fgcolor_vw_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0288,
+        "v4_color": 0.0389,
+        "concept": 0.0481
+      },
+      "n_subjects": 8
+    },
+    "roi_luminance_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": 0.0287,
+        "v4_color": 0.0116,
+        "concept": 0.0168
+      },
+      "n_subjects": 8
+    },
+    "roi_synth_hue_avg_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": -0.0223,
+        "v4_color": -0.0266,
+        "concept": -0.0186
+      },
+      "n_subjects": 8
+    },
+    "roi_synth_hue_avgfull_8subj_summary.npy": {
+      "mean_R2": {
+        "early_v1v3": -0.0202,
+        "v4_color": -0.0285,
+        "concept": -0.0294
+      },
+      "n_subjects": 8
+    }
+  }
+}
