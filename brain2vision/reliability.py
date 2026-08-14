@@ -48,7 +48,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from brain2vision.roi import ROI_SETS, load_roi_masks
-from brain2vision.color_decode import build_xy, train_eval
+from brain2vision.color_decode import build_xy, build_xy_multi, train_eval
 from brain2vision.color_targets import COLOR_NAMES
 
 
@@ -79,6 +79,10 @@ def main():
     p.add_argument("--model", choices=["ridge", "elasticnet", "kernel", "svr", "mlp"],
                    default="ridge")
     p.add_argument("--out", default="reliability_8subj.png")
+    p.add_argument("--load-once", action="store_true",
+                   help="read the betas file once into the union of the ROI masks "
+                        "instead of once per ROI. Faster; peak memory becomes the "
+                        "union matrix plus one ROI matrix.")
     args = p.parse_args()
     labels = args.labels.split(",") if args.labels else COLOR_NAMES
 
@@ -114,8 +118,13 @@ def main():
             continue
         print(f"\n=== subject {subj} ===")
         res = {}
+        # Default: one ROI at a time (peak memory = one ROI matrix, as before).
+        # The webdataset rescan is avoided either way — the alignment is memoised.
+        data = (build_xy_multi(subj, args.target, ROI_SETS, return_ids=True)
+                if args.load_once else None)
         for s, f in ROI_SETS.items():
-            X, y, te, ids = build_xy(subj, args.target, rois=f, return_ids=True)
+            X, y, te, ids = (data.pop(s) if data is not None else
+                             build_xy(subj, args.target, rois=f, return_ids=True))
             isA = (np.asarray(ids).astype(np.int64) % 2 == 0)   # image-disjoint halves
             res[s] = {}
             for tag, m in (("A", isA), ("B", ~isA)):
@@ -123,6 +132,7 @@ def main():
                                       labels, args.r2_weighting, args.model)
             del X, y, te; gc.collect()
             print(f"  {s:11s} A={res[s]['A']:+.3f}  B={res[s]['B']:+.3f}")
+        del data; gc.collect()
         by_subj[subj] = res
         _save()
         print(f"  [checkpoint saved -> {ckpt}]")

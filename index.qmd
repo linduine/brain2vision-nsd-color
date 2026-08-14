@@ -54,7 +54,7 @@ Since this report, the study's central open question — *is higher visual corte
 
 The **double dissociation** reported below (colour → higher visual, luminance → early visual; interaction ΔΔR² = +0.024, *p* = 0.008) therefore stands and is extended. A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in preparation.
 
-*Note on numbers:* the R² values below use uniform pooling across the 11 colour bins. The follow-up work pools variance-weighted (so near-absent bins such as purple cannot dominate), which raises absolute values (e.g. concept colour R² = 0.045 → 0.067) without changing any ranking or conclusion; the dissociation interaction is +0.024 under either pooling.
+*Note on numbers:* the R² values below use uniform pooling across the 11 colour bins. The follow-up work pools variance-weighted (so near-absent bins such as purple cannot dominate), which raises absolute values (e.g. higher-visual colour R² = 0.045 → 0.066) without changing any ranking or conclusion; the dissociation interaction is +0.024 under uniform and +0.023 under variance pooling.
 :::
 
 ## Motivation & hypotheses {#sec-hypotheses}
@@ -75,7 +75,7 @@ motivated two pre-specified questions, plus one control added along the way.
   the comparison is made fair (matched voxel count and regularization).
 - **H2 — Early vs. higher visual cortex for colour.** Setting V4 aside, which
   carries more decodable colour: early visual cortex (V1–V3), which has
-  colour-opponent signals from the first cortical stage, or higher "concept"
+  colour-opponent signals from the first cortical stage, or higher-visual
   cortex, where colour co-varies with object and scene identity?
 - **H3 — Is early visual cortex's colour signal actually luminance?** (Added
   after the colour results: early visual decoded *black*/*white* far better than
@@ -146,7 +146,7 @@ voxels) *overfit* and scored **negative** test R² (−0.37), making it look lik
 the worst region — which reflects under-regularization rather than the
 underlying signal. Tuning `alpha` per fit with `RidgeCV` (leave-one-out CV over a
 grid) addresses this; the selected `alpha` scales with ROI size (V4 ≈ 5.3k, early
-≈ 15k, concept ≈ 43k), and the overfitting is much reduced.
+≈ 15k, higher visual ≈ 43k), and the overfitting is much reduced.
 
 ### Voxel-count matching {#sec-matching}
 
@@ -213,13 +213,13 @@ than early visual cortex — is the largest and most reliable effect in the set.
 
 | contrast | Δ R² | *p* | *q* (FDR) | 95% CI |
 |---|---:|---:|---:|:---:|
-| colour: concept − early | +0.012 | 0.008 | 0.01 | [0.007, 0.018] |
-| colour: concept − V4 | +0.016 | 0.008 | 0.01 | [0.012, 0.020] |
+| colour: higher − early | +0.012 | 0.008 | 0.01 | [0.007, 0.018] |
+| colour: higher − V4 | +0.016 | 0.008 | 0.01 | [0.012, 0.020] |
 | colour: early − V4 | +0.004 | 0.141 | 0.14 | [−0.001, 0.007] |
-| luminance: early − concept | +0.012 | 0.016 | 0.02 | [0.008, 0.015] |
+| luminance: early − higher | +0.012 | 0.016 | 0.02 | [0.008, 0.015] |
 | luminance: early − V4 | +0.017 | 0.008 | 0.01 | [0.012, 0.021] |
-| luminance: concept − V4 | +0.005 | 0.008 | 0.01 | [0.003, 0.008] |
-| **bias: concept − early** | **+0.024** | **0.008** | **0.01** | **[0.021, 0.028]** |
+| luminance: higher − V4 | +0.005 | 0.008 | 0.01 | [0.003, 0.008] |
+| **bias: higher − early** | **+0.024** | **0.008** | **0.01** | **[0.021, 0.028]** |
 | bias: V4 − early | +0.014 | 0.008 | 0.01 | [0.010, 0.017] |
 
 : Across-subject ROI contrasts (n = 8): mean paired difference in decoding R²,
@@ -233,7 +233,7 @@ colour R² − luminance R² (the dissociation interaction). {#tbl-stats}
 ### Color: higher visual cortex wins {#sec-color}
 
 Across all 8 subjects, with size and regularization controlled, higher visual
-cortex decodes color best (@tbl-color, @fig-color): concept beats early visual
+cortex decodes color best (@tbl-color, @fig-color): higher visual cortex beats early visual
 (Δ = 0.012; paired sign-flip permutation *p* = 0.008, FDR *q* = 0.01; 95% CI
 [0.007, 0.018]) and V4 (Δ = 0.016, *q* = 0.01). Early visual and V4 are
 statistically tied on color (Δ = 0.004, *q* = 0.14).

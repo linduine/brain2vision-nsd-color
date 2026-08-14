@@ -1,0 +1,485 @@
+[
+ {
+  "family": "Dissociation",
+  "contrast": "Dissociation: higher \u2212 early (colour)",
+  "mean": 0.0123,
+  "p": 0.0312,
+  "q": 0.0312,
+  "sig": "*",
+  "ci": [
+   0.0047,
+   0.0195
+  ],
+  "n_agree": 6,
+  "n": 8,
+  "cells": [
+   "Dissociation: higher \u2212 early (colour)",
+   "+0.012",
+   "0.031",
+   "0.031",
+   "6/8",
+   "*",
+   "[+0.005, +0.019]"
+  ]
+ },
+ {
+  "family": "Dissociation",
+  "contrast": "Dissociation: higher \u2212 V4 (colour)",
+  "mean": 0.0169,
+  "p": 0.0078,
+  "q": 0.0117,
+  "sig": "*",
+  "ci": [
+   0.0115,
+   0.0221
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Dissociation: higher \u2212 V4 (colour)",
+   "+0.017",
+   "0.008",
+   "0.012",
+   "8/8",
+   "*",
+   "[+0.012, +0.022]"
+  ]
+ },
+ {
+  "family": "Dissociation",
+  "contrast": "Luminance: early \u2212 higher",
+  "mean": 0.0108,
+  "p": 0.0156,
+  "q": 0.0188,
+  "sig": "*",
+  "ci": [
+   0.0066,
+   0.0142
+  ],
+  "n_agree": 7,
+  "n": 8,
+  "cells": [
+   "Luminance: early \u2212 higher",
+   "+0.011",
+   "0.016",
+   "0.019",
+   "7/8",
+   "*",
+   "[+0.007, +0.014]"
+  ]
+ },
+ {
+  "family": "Dissociation",
+  "contrast": "Luminance: early \u2212 V4",
+  "mean": 0.0162,
+  "p": 0.0078,
+  "q": 0.0117,
+  "sig": "*",
+  "ci": [
+   0.0115,
+   0.0204
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Luminance: early \u2212 V4",
+   "+0.016",
+   "0.008",
+   "0.012",
+   "8/8",
+   "*",
+   "[+0.012, +0.020]"
+  ]
+ },
+ {
+  "family": "Dissociation",
+  "contrast": "Interaction (colour\u2212luminance): higher \u2212 early",
+  "mean": 0.0231,
+  "p": 0.0078,
+  "q": 0.0117,
+  "sig": "*",
+  "ci": [
+   0.0176,
+   0.0282
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Interaction (colour\u2212luminance): higher \u2212 early",
+   "+0.023",
+   "0.008",
+   "0.012",
+   "8/8",
+   "*",
+   "[+0.018, +0.028]"
+  ]
+ },
+ {
+  "family": "Dissociation",
+  "contrast": "Interaction (colour\u2212luminance): V4 \u2212 early",
+  "mean": 0.0116,
+  "p": 0.0078,
+  "q": 0.0117,
+  "sig": "*",
+  "ci": [
+   0.0076,
+   0.0155
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Interaction (colour\u2212luminance): V4 \u2212 early",
+   "+0.012",
+   "0.008",
+   "0.012",
+   "8/8",
+   "*",
+   "[+0.008, +0.016]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Collapse (physical): early, raw \u2212 residual",
+  "mean": 0.036,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.031,
+   0.0415
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Collapse (physical): early, raw \u2212 residual",
+   "+0.036",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.031, +0.042]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Collapse (physical): V4, raw \u2212 residual",
+  "mean": 0.0375,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0316,
+   0.0441
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Collapse (physical): V4, raw \u2212 residual",
+   "+0.037",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.032, +0.044]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Collapse (physical): higher, raw \u2212 residual",
+  "mean": 0.0569,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0513,
+   0.063
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Collapse (physical): higher, raw \u2212 residual",
+   "+0.057",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.051, +0.063]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Collapse (perceptual): early, raw \u2212 residual",
+  "mean": 0.0477,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0413,
+   0.0547
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Collapse (perceptual): early, raw \u2212 residual",
+   "+0.048",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.041, +0.055]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Collapse (perceptual): V4, raw \u2212 residual",
+  "mean": 0.0514,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0436,
+   0.0601
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Collapse (perceptual): V4, raw \u2212 residual",
+   "+0.051",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.044, +0.060]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Collapse (perceptual): higher, raw \u2212 residual",
+  "mean": 0.0774,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0697,
+   0.0857
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Collapse (perceptual): higher, raw \u2212 residual",
+   "+0.077",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.070, +0.086]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Interaction (physical): collapse, higher \u2212 early",
+  "mean": 0.0209,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0161,
+   0.0252
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Interaction (physical): collapse, higher \u2212 early",
+   "+0.021",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.016, +0.025]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Interaction (perceptual): collapse, higher \u2212 early",
+  "mean": 0.0297,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0232,
+   0.0355
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Interaction (perceptual): collapse, higher \u2212 early",
+   "+0.030",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.023, +0.036]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Residual target (physical): early \u2212 higher",
+  "mean": 0.0086,
+  "p": 0.0078,
+  "q": 0.0087,
+  "sig": "**",
+  "ci": [
+   0.0052,
+   0.0117
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Residual target (physical): early \u2212 higher",
+   "+0.009",
+   "0.008",
+   "0.009",
+   "8/8",
+   "**",
+   "[+0.005, +0.012]"
+  ]
+ },
+ {
+  "family": "Residualisation",
+  "contrast": "Residual target (perceptual): early \u2212 higher",
+  "mean": 0.0062,
+  "p": 0.0312,
+  "q": 0.0312,
+  "sig": "*",
+  "ci": [
+   0.0027,
+   0.0096
+  ],
+  "n_agree": 6,
+  "n": 8,
+  "cells": [
+   "Residual target (perceptual): early \u2212 higher",
+   "+0.006",
+   "0.031",
+   "0.031",
+   "6/8",
+   "*",
+   "[+0.003, +0.010]"
+  ]
+ },
+ {
+  "family": "Attention / retinotopy",
+  "contrast": "Attention: FG \u2212 BG, early",
+  "mean": -0.0148,
+  "p": 0.0078,
+  "q": 0.0098,
+  "sig": "*",
+  "ci": [
+   -0.0182,
+   -0.0116
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Attention: FG \u2212 BG, early",
+   "-0.015",
+   "0.008",
+   "0.010",
+   "8/8",
+   "*",
+   "[-0.018, -0.012]"
+  ]
+ },
+ {
+  "family": "Attention / retinotopy",
+  "contrast": "Attention: FG \u2212 BG, V4",
+  "mean": 0.0006,
+  "p": 0.8125,
+  "q": 0.8125,
+  "sig": "n.s.",
+  "ci": [
+   -0.0045,
+   0.0054
+  ],
+  "n_agree": 5,
+  "n": 8,
+  "cells": [
+   "Attention: FG \u2212 BG, V4",
+   "+0.001",
+   "0.812",
+   "0.812",
+   "5/8",
+   "n.s.",
+   "[-0.004, +0.005]"
+  ]
+ },
+ {
+  "family": "Attention / retinotopy",
+  "contrast": "Attention: FG \u2212 BG, higher visual cortex",
+  "mean": -0.006,
+  "p": 0.0078,
+  "q": 0.0098,
+  "sig": "*",
+  "ci": [
+   -0.0087,
+   -0.0035
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Attention: FG \u2212 BG, higher visual cortex",
+   "-0.006",
+   "0.008",
+   "0.010",
+   "8/8",
+   "*",
+   "[-0.009, -0.003]"
+  ]
+ },
+ {
+  "family": "Attention / retinotopy",
+  "contrast": "Retinotopy: (BG\u2212FG) early \u2212 higher",
+  "mean": 0.0087,
+  "p": 0.0078,
+  "q": 0.0098,
+  "sig": "*",
+  "ci": [
+   0.0056,
+   0.0124
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Retinotopy: (BG\u2212FG) early \u2212 higher",
+   "+0.009",
+   "0.008",
+   "0.010",
+   "8/8",
+   "*",
+   "[+0.006, +0.012]"
+  ]
+ },
+ {
+  "family": "Attention / retinotopy",
+  "contrast": "Retinotopy: (BG\u2212FG) early \u2212 V4",
+  "mean": 0.0154,
+  "p": 0.0078,
+  "q": 0.0098,
+  "sig": "*",
+  "ci": [
+   0.0106,
+   0.0199
+  ],
+  "n_agree": 8,
+  "n": 8,
+  "cells": [
+   "Retinotopy: (BG\u2212FG) early \u2212 V4",
+   "+0.015",
+   "0.008",
+   "0.010",
+   "8/8",
+   "*",
+   "[+0.011, +0.020]"
+  ]
+ }
+]

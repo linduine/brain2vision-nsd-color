@@ -51,17 +51,63 @@ import numpy as np
 
 from brain2vision.roi import load_roi_masks, _betas_filename, _first_dataset_key, REPO_ID
 
-IMG_COL = 0      # behav column holding the 73k image id  (verify!)
-BETAS_COL = 5    # behav column holding the betas row index (verify!)
+# Behav column layout, documented in the MindEye2 dataset README
+# (https://huggingface.co/datasets/pscotti/mindeyev2, README.md):
+#   0  cocoidx  = 73KID - 1   (0-based index into the 73k NSD images)
+#   5  global_trial              (used by the MindEye2 dataloader to index betas)
+#  16  shared1000                (1 if this trial's image is in the shared-1000 set)
+IMG_COL = 0
+BETAS_COL = 5
+SHARED_COL = 16
+
+# The README also warns:
+#   'Always use "new_test" instead of "test" in the wds folders, "test" refers
+#    to using the old NSD data from before they released the full set of
+#    scanning sessions.'
+# Matching on the substring "test" therefore picks up the LEGACY shards as well
+# as the current ones, and reads those trials twice. But the repo does not
+# necessarily ship BOTH a "train" and a "new_train": whichever names are
+# actually present must be discovered, not assumed. Hard-coding
+# ("new_train", "new_test") selects only held-out shards when the training
+# directory happens to be called "train", leaving zero training trials.
+LEGACY_PAIRS = {"test": "new_test", "train": "new_train"}
+
+
+def _select_shard_dirs(files, subj_tag, verbose=True):
+    """
+    Return the webdataset directory names to read for one participant.
+
+    Keeps every directory present, except a legacy directory whose superseding
+    'new_' counterpart also exists (per the MindEye2 README).
+    """
+    dirs = sorted({f.split("/")[2] for f in files
+                   if f.startswith(f"wds/{subj_tag}/") and f.endswith(".tar")
+                   and len(f.split("/")) > 3})
+    drop = {old for old, new in LEGACY_PAIRS.items() if old in dirs and new in dirs}
+    keep = [d for d in dirs if d not in drop]
+    if verbose:
+        print(f"  wds dirs for {subj_tag}: found {dirs}")
+        if drop:
+            print(f"    dropping superseded {sorted(drop)} "
+                  f"(the 'new_' versions are present)")
+        print(f"    reading {keep}")
+    return keep
 
 
 # --------------------------------------------------------------------------- #
 # Alignment: read behav from the MindEye2 webdataset
 # --------------------------------------------------------------------------- #
-def read_behav_alignment(subj, cache_dir=None):
+def read_behav_alignment(subj, cache_dir=None, legacy_shards=False):
     """
     Return (betas_rows, nsd_ids, is_test) arrays, one entry per trial, by
     scanning the subject's webdataset behav files on Hugging Face.
+
+    Superseded shard directories are skipped (see _select_shard_dirs). The
+    held-out flag is taken from the behav shared1000 column rather than from
+    the shard name, so the split is defined by the data, not by a filename.
+
+    legacy_shards=True restores the old behaviour (scan every tar, flag by
+    filename) for reproducing pre-fix results.
     """
     from huggingface_hub import HfApi, hf_hub_download
     api = HfApi()
@@ -69,6 +115,10 @@ def read_behav_alignment(subj, cache_dir=None):
     subj_tag = f"subj{subj:02d}"
     tars = [f for f in files
             if f.startswith(f"wds/{subj_tag}/") and f.endswith(".tar")]
+    if not legacy_shards:
+        keep_dirs = _select_shard_dirs(files, subj_tag)
+        tars = [f for f in tars
+                if any(f.startswith(f"wds/{subj_tag}/{d}/") for d in keep_dirs)]
     if not tars:
         raise FileNotFoundError(
             f"No wds tars for {subj_tag}; check repo layout with list_repo_files.")
@@ -76,7 +126,7 @@ def read_behav_alignment(subj, cache_dir=None):
     rows, ids, test = [], [], []
     for rel in sorted(tars):
         local = hf_hub_download(REPO_ID, rel, repo_type="dataset")
-        is_test = "test" in rel.lower()
+        shard_is_test = "test" in rel.rsplit("/", 2)[-2].lower()
         with tarfile.open(local) as tf:
             for m in tf.getmembers():
                 base = m.name.rsplit("/", 1)[-1].lower()
@@ -92,20 +142,122 @@ def read_behav_alignment(subj, cache_dir=None):
                 behav = np.atleast_2d(behav)
                 ids.append(int(behav[0, IMG_COL]))
                 rows.append(int(behav[0, BETAS_COL]))
-                test.append(is_test)
+                # Prefer the documented shared1000 flag; fall back to the shard
+                # name only if the column is missing or padded with -1.
+                flag = (int(behav[0, SHARED_COL])
+                        if behav.shape[1] > SHARED_COL else -1)
+                test.append(bool(flag == 1) if flag in (0, 1) else shard_is_test)
     rows = np.asarray(rows); ids = np.asarray(ids); test = np.asarray(test)
     valid = (rows >= 0) & (ids >= 0)          # drop any residual -1 padding
     rows, ids, test = rows[valid], ids[valid], test[valid]
+
+    n_dup = len(rows) - len({(int(r), int(i)) for r, i in zip(rows, ids)})
+    n_test, n_train = int(test.sum()), int((~test).sum())
     print(f"Alignment: {len(rows)} trials | id range [{ids.min()},{ids.max()}] "
-          f"| row range [{rows.min()},{rows.max()}] | test trials {test.sum()}")
+          f"| row range [{rows.min()},{rows.max()}] | test trials {n_test}")
+    print(f"  shards: {len(tars)} tars | train trials {n_train} "
+          f"| duplicate (row,id) reads: {n_dup}")
+    if n_dup:
+        print("  !! trials read more than once -- check the shard selection.")
     if ids.max() >= 73000 or rows.min() < 0:
         print("  !! id/row ranges look off -- re-check IMG_COL/BETAS_COL.")
+
+    # Fail here, with a diagnosis, rather than several frames deep in sklearn.
+    if n_train == 0 or n_test == 0:
+        raise RuntimeError(
+            f"subj{subj:02d}: the split has {n_train} training and {n_test} "
+            f"held-out trials — one side is empty, so nothing can be fitted.\n"
+            f"  shards read: {sorted({t.split('/')[2] for t in tars})}\n"
+            f"  Every trial was classified the same way. Check that the shard "
+            f"selection includes a training directory, and that behav column "
+            f"{SHARED_COL} is the shared1000 flag in this release.")
     return rows, ids, test
 
 
 # --------------------------------------------------------------------------- #
 # Assemble X (ROI betas) and y (target)
 # --------------------------------------------------------------------------- #
+# Callers that decode several ROIs for the same participant (replicate_subjects,
+# reliability) previously called build_xy once per ROI, which re-scanned the
+# webdataset and re-read the whole betas file every time — three times the I/O
+# for the same bytes. build_xy_multi does that work once per participant; the
+# alignment is additionally memoised because it is small and expensive to fetch.
+_ALIGN_CACHE = {}
+
+
+def _alignment(subj):
+    """read_behav_alignment, memoised per participant within a process."""
+    if subj not in _ALIGN_CACHE:
+        _ALIGN_CACHE[subj] = read_behav_alignment(subj)
+    else:
+        rows, ids, test = _ALIGN_CACHE[subj]
+        print(f"Alignment: reusing cached scan for subj{subj:02d} "
+              f"({len(rows):,} trials, {int(test.sum()):,} held out)")
+    return _ALIGN_CACHE[subj]
+
+
+def _targets(color_targets_npy):
+    color = np.load(color_targets_npy)
+    ct_ids = np.load(color_targets_npy.replace(".npy", "_ids.npy"))
+    return color, {int(i): k for k, i in enumerate(ct_ids)}
+
+
+def build_xy_multi(subj, color_targets_npy, roi_sets, return_ids=False):
+    """
+    Build (X, y, is_test) for SEVERAL ROIs of one participant, reading the
+    alignment and the betas file once.
+
+    roi_sets : dict {name: [region fragments]}, e.g. ROI_SETS from roi.py.
+    Returns  : dict {name: (X, y, is_test[, ids])}
+
+    Memory note: the betas are read once into the UNION of the requested ROI
+    masks, then each ROI is a column slice of that. Peak usage is therefore the
+    union matrix plus one ROI matrix, rather than one ROI matrix at a time — a
+    modest increase in exchange for reading the file once instead of N times.
+    """
+    import gc
+    import h5py
+    from huggingface_hub import hf_hub_download
+
+    color, id_to_row = _targets(color_targets_npy)
+    betas_rows, nsd_ids, is_test = _alignment(subj)
+    keep = np.array([int(i) in id_to_row for i in nsd_ids])
+    betas_rows, nsd_ids, is_test = betas_rows[keep], nsd_ids[keep], is_test[keep]
+
+    masks = {name: load_roi_masks(subj, list(frags))
+             for name, frags in roi_sets.items()}
+    union = np.zeros_like(next(iter(masks.values())))
+    for m in masks.values():
+        union |= m
+    # column index of each ROI's voxels within the union matrix
+    union_idx = np.flatnonzero(union)
+    pos = {v: k for k, v in enumerate(union_idx)}
+    cols = {name: np.array([pos[v] for v in np.flatnonzero(m)], dtype=int)
+            for name, m in masks.items()}
+
+    bpath = hf_hub_download(REPO_ID, _betas_filename(subj), repo_type="dataset")
+    with h5py.File(bpath, "r") as f:
+        dset = f[_first_dataset_key(f)]
+        n_all = dset.shape[0]
+        allvox = np.empty((n_all, union.sum()), dtype=np.float32)
+        step = 2000
+        for i in range(0, n_all, step):
+            allvox[i:i + step] = dset[i:i + step][:, union]
+    print(f"  read betas once: {n_all:,} x {int(union.sum()):,} voxels "
+          f"(union of {', '.join(roi_sets)})")
+
+    y = np.stack([color[id_to_row[int(i)]] for i in nsd_ids]).astype(np.float32)
+
+    out = {}
+    for name, c in cols.items():
+        X = allvox[np.ix_(betas_rows, c)]
+        print(f"  {name}: X={X.shape}  y={y.shape}  test={int(is_test.sum())}")
+        out[name] = (X, y, is_test, nsd_ids) if return_ids else (X, y, is_test)
+    del allvox
+    gc.collect()
+    return out
+
+
 def build_xy(subj, color_targets_npy, rois=("V4",), ids_npy=None, betas_npy=None,
              return_ids=False):
     import gc
@@ -120,7 +272,7 @@ def build_xy(subj, color_targets_npy, rois=("V4",), ids_npy=None, betas_npy=None
         nsd_ids, is_test = nsd_ids[keep], is_test[keep]
         X = np.load(betas_npy, mmap_mode="r")[keep].astype(np.float32, copy=False)
     else:                                           # MindEye2 path
-        betas_rows, nsd_ids, is_test = read_behav_alignment(subj)
+        betas_rows, nsd_ids, is_test = _alignment(subj)
         # Drop trials whose image has no colour target BEFORE materialising X,
         # so we never build rows we'd only discard (halves peak memory).
         keep = np.array([int(i) in id_to_row for i in nsd_ids])
@@ -147,9 +299,25 @@ def build_xy(subj, color_targets_npy, rois=("V4",), ids_npy=None, betas_npy=None
 
 
 def _shared1000_mask(nsd_ids):
+    """
+    Boolean mask: which of `nsd_ids` are in the shared-1000 set?
+
+    NOTE ON THE FILE FORMAT. shared1000.npy is a length-73,000 BOOLEAN MASK over
+    the 73k images, not a list of 1,000 image ids. Reading it as a list of ids
+    (set(load(...).astype(int))) yields {0, 1} and silently marks essentially
+    nothing as held out. The repository also ships test_73k_images.npy, which
+    IS the 1,000-element id list; either can be used, but they are different
+    shapes and must not be confused.
+    """
     from huggingface_hub import hf_hub_download
     p = hf_hub_download(REPO_ID, "shared1000.npy", repo_type="dataset")
-    shared = set(np.load(p).astype(int).tolist())
+    a = np.load(p).ravel()
+    if a.dtype == bool or (a.size == 73000 and set(np.unique(a).tolist()) <= {0, 1}):
+        shared = set(np.flatnonzero(a).tolist())          # mask -> ids
+    else:
+        shared = set(a.astype(int).tolist())              # already ids
+    if len(shared) != 1000:
+        print(f"  !! shared1000 resolved to {len(shared)} images, expected 1000.")
     return np.array([int(i) in shared for i in nsd_ids])
 
 
@@ -193,14 +361,31 @@ def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None,
     elif model == "elasticnet":
         # Sparse LINEAR decoder: shrinks AND zeros out voxels. Robustness check
         # within linear models — does a different regularizer give the same answer?
+        # PERFORMANCE (does not change the objective or its optimum):
+        #   n_jobs   the 3 CV folds run in parallel. The old comment here said
+        #            n_jobs=1 avoided "per-core data copies" — true when X was a
+        #            whole ROI, but after voxel matching Xtr is k=397 columns,
+        #            i.e. ~34 MB, so three workers cost ~100 MB. Freed 2-3x.
+        #   selection="random"  coordinate descent visits coefficients in random
+        #            order rather than cyclically. Neighbouring voxels are highly
+        #            correlated and cyclic CD zig-zags on correlated designs;
+        #            randomised order is the standard remedy. random_state fixes
+        #            it, so runs stay reproducible.
+        # Both are solver-level choices: same penalised least-squares problem,
+        # same minimiser, only the route there differs. Verified against the
+        # subjects computed under the previous settings (see PROVENANCE).
         import inspect
         from sklearn.linear_model import MultiTaskElasticNetCV
-        kw = dict(l1_ratio=0.5, cv=3, max_iter=3000, n_jobs=1)  # n_jobs=1: avoid per-core data copies
+        kw = dict(l1_ratio=0.5, cv=3, max_iter=3000, n_jobs=3,
+                  selection="random", random_state=0)
         # 'n_alphas' was renamed to 'alphas' (now accepts an int) in recent sklearn
         params = inspect.signature(MultiTaskElasticNetCV).parameters
         kw["n_alphas" if "n_alphas" in params else "alphas"] = 8
+        kw = {k: v for k, v in kw.items() if k in params}   # tolerate older sklearn
         reg = MultiTaskElasticNetCV(**kw).fit(Xtr, ytr)
         pred = reg.predict(Xte)
+        print(f"MultiTaskElasticNetCV selected alpha = {reg.alpha_:.5g}  "
+              f"(path {reg.alphas_.min():.3g}..{reg.alphas_.max():.3g})")
     elif model == "kernel":
         # NONLINEAR via an RBF-kernel approximation (Nystroem) + ridge. The
         # Nystroem features scale to many trials where an exact kernel matrix

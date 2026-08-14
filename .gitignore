@@ -13,8 +13,22 @@ coco_cache/
 *.part
 w2c.*
 
-# Derived arrays / decoding summaries (regenerable; large).
+# Derived arrays (regenerable; large). The per-image targets in data/ are ~136 MB
+# and are derived from the NSD/COCO stimuli, so they stay out.
 *.npy
+*.npz
+
+# ...but the per-participant decoding summaries are ~220 KB in total and contain
+# only derived R² values (no NSD data, no local paths). The manuscript's data
+# availability statement promises them, and PROVENANCE.md maps every reported
+# number onto them, so they are version-controlled.
+!roi_*_summary.npy
+!reliability_*_summary.npy
+!ncsnr_*_ncsnr.npy
+
+# Editor and office temporaries (LibreOffice leaves both while a file is open).
+*.tmp
+.~lock.*#
 
 # Regenerable output figures the decoding scripts write to the repo ROOT
 # (roi_*.png, reliability_*.png, ncsnr_*.png, ...). The Quarto site's assets in
@@ -58,3 +72,19 @@ _convert.md
 # Generated preview images written by view_synthetic / reconstruct
 figures/synth_*.png
 figures/*_preview.png
+
+# Manuscript builds and their tooling live outside this repo; the preprint is
+# linked instead. Keep the analysis pipeline public, keep the writing private.
+*.docx
+count_words.py
+
+# Private working notes. These are drafting scaffolding and unpublished ideas,
+# not part of the reproducibility record the manuscript promises. CITATIONS_
+# VERIFIED.md and STATS_AUDIT.md are deliberately NOT here: they document that
+# the reported numbers and references were checked, which belongs in public.
+IDEAS.md
+PRIORITY_SEARCH.md
+READING_LIST.md
+CHANGES_PENDING.md
+NUMBERS_TO_UPDATE.md
+METRICS_SURVEY.md

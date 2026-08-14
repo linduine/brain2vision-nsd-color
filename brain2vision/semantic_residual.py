@@ -32,6 +32,8 @@ Usage
 """
 
 import argparse
+import os
+
 import numpy as np
 
 
@@ -45,13 +47,53 @@ def _aligned(color_npy, semantic_npy):
     return y.astype(np.float64), S.astype(np.float64), yid
 
 
-def residualize(color_npy, semantic_npy, out, n_folds=5, seed=0):
+# Mirrors color_targets.COLOR_NAMES. Duplicated deliberately: importing that
+# module pulls in the whole package (and h5py), and a failed import must not
+# silently relabel a colour target as c0..cN.
+_BASIC_COLOUR_TERMS = ["red", "orange", "yellow", "green", "blue",
+                       "purple", "pink", "brown", "black", "white", "gray"]
+
+
+def _target_labels(target_npy, n_cols, labels=None):
+    """Column names for the target, and a noun for the printed report.
+
+    This module is not colour-specific: it residualises whatever target it is
+    given, including the luminance (brightness-bin) target. Labelling brightness
+    bins "red, orange, yellow …" — which it used to do unconditionally — produces
+    output that is numerically right and verbally wrong, so the names are now
+    derived from the target rather than assumed.
+    """
+    if labels:
+        names = [s.strip() for s in labels.split(",")]
+        if len(names) != n_cols:
+            raise ValueError(f"--labels has {len(names)} names, target has {n_cols} columns")
+        return names, "target"
+    stem = os.path.basename(target_npy).lower()
+    if "lumin" in stem or "bright" in stem:
+        return [f"L{i}" for i in range(n_cols)], "luminance"
+    if "color" in stem or "colour" in stem:
+        try:
+            from brain2vision.color_targets import COLOR_NAMES
+            names = list(COLOR_NAMES)
+        except Exception:
+            # Importing the package pulls in h5py; fall back to the same fixed
+            # list rather than silently degrading to c0..cN on a colour target.
+            names = _BASIC_COLOUR_TERMS
+        if len(names) == n_cols:
+            return names, "colour"
+        print(f"  [warning: {n_cols} columns but {len(names)} colour names; "
+              f"using generic labels. Pass --labels to name them.]")
+    return [f"c{i}" for i in range(n_cols)], "target"
+
+
+def residualize(color_npy, semantic_npy, out, n_folds=5, seed=0, labels=None):
     from sklearn.model_selection import KFold
     from sklearn.linear_model import RidgeCV
     from sklearn.metrics import r2_score
 
     y, S, ids = _aligned(color_npy, semantic_npy)
-    print(f"aligned: colour {y.shape}, semantic {S.shape}")
+    names, noun = _target_labels(color_npy, y.shape[1], labels)
+    print(f"aligned: {noun} {y.shape}, predictors {S.shape}")
 
     y_sem = np.zeros_like(y)
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
@@ -66,18 +108,19 @@ def residualize(color_npy, semantic_npy, out, n_folds=5, seed=0):
     np.save(out, resid)
     np.save(out.replace(".npy", "_ids.npy"), ids)
 
-    try:
-        from brain2vision.color_targets import COLOR_NAMES
-    except Exception:
-        COLOR_NAMES = [f"c{i}" for i in range(y.shape[1])]
-    print(f"\nOut-of-sample R²(colour ~ semantics) overall = {r2_overall:.3f}")
-    print("  (how much image colour is explained by which objects are present)")
-    print("per-colour R²(colour ~ semantics):")
-    for name, r in zip(COLOR_NAMES, r2_per):
+    # sklearn's default is a uniform average over columns; the manuscript reports
+    # variance-weighted R², so both are printed to stop the two being conflated.
+    r2_vw = r2_score(y, y_sem, multioutput="variance_weighted")
+    print(f"\nOut-of-sample R²({noun} ~ predictors):")
+    print(f"   uniform average   = {r2_overall:.3f}")
+    print(f"   variance-weighted = {r2_vw:.3f}   <- comparable to the decoding R²")
+    print(f"  (how much image {noun} is explained by the annotated content)")
+    print(f"per-column R²({noun} ~ predictors):")
+    for name, r in zip(names, r2_per):
         print(f"   {name:8s} {r:+.3f}")
-    print(f"\nSaved residual colour target -> {out}")
+    print(f"\nSaved residual {noun} target -> {out}")
     print("Next: decode it per ROI with replicate_subjects and compare to the "
-          "original colour result.")
+          "original result. For a non-colour target, pass the matching --labels.")
     return resid, r2_overall
 
 
@@ -87,8 +130,12 @@ def main():
     p.add_argument("--semantic", required=True, help="semantic_targets.npy")
     p.add_argument("--out", default="data/color_targets_residual.npy")
     p.add_argument("--n-folds", type=int, default=5)
+    p.add_argument("--labels", default=None,
+                   help="comma-separated column names; inferred from the target "
+                        "filename if omitted (colour names / L0..Ln for luminance)")
     args = p.parse_args()
-    residualize(args.color, args.semantic, args.out, n_folds=args.n_folds)
+    residualize(args.color, args.semantic, args.out, n_folds=args.n_folds,
+                labels=args.labels)
 
 
 if __name__ == "__main__":

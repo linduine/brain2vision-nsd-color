@@ -61,9 +61,10 @@ New modules: `reliability` (split-half), `ncsnr_quality` (signal quality),
 A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in
 preparation.
 
-> **Verifying the code?** Run `python test_analysis.py` — 26 checks that plant a known
-> signal and confirm the code recovers it (and plant a known null and confirm it doesn't).
-> No fMRI data required.
+> **Verifying the code?** Run `python test_analysis.py` (26 checks: plant a known signal,
+> confirm the code recovers it; plant a known null, confirm it doesn't) and
+> `python test_plumbing.py` (21 checks on the actual derived targets: id alignment,
+> fg/bg partition, residualisation, split integrity).
 >
 > **Reproducing the paper?** [`PROVENANCE.md`](PROVENANCE.md) maps every reported number to
 > the exact `*_summary.npy` file and the command that produced it, and flags which of the

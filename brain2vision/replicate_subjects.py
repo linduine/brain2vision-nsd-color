@@ -30,13 +30,20 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from brain2vision.roi import ROI_SETS, load_roi_masks
-from brain2vision.color_decode import build_xy, train_eval
+from brain2vision.color_decode import build_xy, build_xy_multi, train_eval
 from brain2vision.color_targets import COLOR_NAMES
 
 
 def _matched_draws(X, y, is_test, k, n_draws, labels, r2_weighting="uniform",
                    model="ridge"):
-    """Per-subject: subsample to k voxels, decode, average over draws."""
+    """Per-subject: subsample to k voxels, decode, average over draws.
+
+    Returns the mean over draws (as before) plus the individual per-draw
+    overall R2 values. The spread of those values is the diagnostic for whether
+    the decodable signal is spread through the region or concentrated in a small
+    part of it: if it were concentrated, random k-voxel draws would sometimes hit
+    it and sometimes miss, and the across-draw variance would be large.
+    """
     n_vox = X.shape[1]
     draws = n_draws if k < n_vox else 1
     rng = np.random.default_rng(0)
@@ -49,7 +56,9 @@ def _matched_draws(X, y, is_test, k, n_draws, labels, r2_weighting="uniform",
                            r2_weighting=r2_weighting)
             ov.append(r["overall_r2"]); t1.append(r["top1"])
             pc.append([r["per_color_r2"][c] for c in labels])
-    return float(np.mean(ov)), float(np.mean(t1)), np.mean(pc, 0)
+    # `ov` was already being averaged and discarded; it is now also returned.
+    # The mean is byte-identical to what this function returned before.
+    return float(np.mean(ov)), float(np.mean(t1)), np.mean(pc, 0), [float(v) for v in ov]
 
 
 def main():
@@ -77,6 +86,10 @@ def main():
                         "whether a nonlinear decoder changes any ROI. Nonlinear "
                         "decoders are much slower -- lower --n-draws (e.g. 3).")
     p.add_argument("--out", default="roi_color_4subj.png")
+    p.add_argument("--load-once", action="store_true",
+                   help="read the betas file once into the union of the ROI masks "
+                        "instead of once per ROI. Faster; peak memory becomes the "
+                        "union matrix plus one ROI matrix.")
     args = p.parse_args()
 
     labels = args.labels.split(",") if args.labels else COLOR_NAMES
@@ -112,9 +125,14 @@ def main():
 
     def _save_ckpt(final_summary=None):
         order = [s for s in args.subjects if s in by_subj]
+        # NOTE: this is the agg that actually gets PERSISTED (the one built later
+        # in main() is used only for printing and plotting). Any new field must
+        # be added here or it will silently be missing from the saved summary.
         agg = {s: {"per": [np.asarray(by_subj[j][s]["per"]) for j in order],
                    "ov": [by_subj[j][s]["ov"] for j in order],
-                   "t1": [by_subj[j][s]["t1"] for j in order]} for s in ROI_SETS}
+                   "t1": [by_subj[j][s]["t1"] for j in order],
+                   "ovd": [by_subj[j][s].get("ovd", []) for j in order]}
+               for s in ROI_SETS}
         blob = {"agg": agg, "by_subj": by_subj, "subjects": order, **cfg}
         if final_summary is not None:
             blob["summary"] = final_summary
@@ -129,20 +147,32 @@ def main():
             continue
         print(f"\n=== subject {subj} ===")
         res = {}
+        # Default: one ROI at a time, so peak memory is one ROI matrix (as before).
+        # The costly webdataset rescan is avoided regardless, because the alignment
+        # is memoised per participant inside color_decode.
+        # --load-once: read the betas file a single time into the union of the ROI
+        # masks and slice. Faster, but peak memory becomes union + one ROI.
+        data = build_xy_multi(subj, args.target, ROI_SETS) if args.load_once else None
         for s, f in ROI_SETS.items():
-            X, y, te = build_xy(subj, args.target, rois=f)
-            ov, t1, per = _matched_draws(X, y, te, k, args.n_draws, labels,
-                                         r2_weighting=args.r2_weighting, model=args.model)
+            X, y, te = data.pop(s) if data is not None else build_xy(subj, args.target, rois=f)
+            ov, t1, per, ovd = _matched_draws(X, y, te, k, args.n_draws, labels,
+                                              r2_weighting=args.r2_weighting, model=args.model)
             del X, y, te; gc.collect()          # free the ROI matrix before next ROI
-            res[s] = {"ov": ov, "t1": t1, "per": per}
+            res[s] = {"ov": ov, "t1": t1, "per": per, "ovd": ovd}
             print(f"  {s:11s} R2={ov:+.3f} top1={t1:.3f}")
+        del data; gc.collect()
         by_subj[subj] = res
         _save_ckpt()
         print(f"  [checkpoint saved after subject {subj} -> {ckpt}]")
 
+    # "ovd" is a per-subject LIST of per-draw R2 values, deliberately not stacked
+    # into an array: regions where k >= n_vox run a single exhaustive draw, so the
+    # lists are ragged across subjects and ROIs.
     agg = {s: {"per": [np.asarray(by_subj[j][s]["per"]) for j in args.subjects],
                "ov": [by_subj[j][s]["ov"] for j in args.subjects],
-               "t1": [by_subj[j][s]["t1"] for j in args.subjects]} for s in ROI_SETS}
+               "t1": [by_subj[j][s]["t1"] for j in args.subjects],
+               "ovd": [by_subj[j][s].get("ovd", []) for j in args.subjects]}
+           for s in ROI_SETS}
 
     print("\n=== across-subject summary (mean +/- SEM) ===")
     sem = lambda a: a.std(0, ddof=1) / np.sqrt(a.shape[0])

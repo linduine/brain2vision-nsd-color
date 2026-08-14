@@ -15,11 +15,11 @@ objects will appear to "decode colour" even without an independent chromatic cod
 
 ## What we found
 
-**1. A double dissociation across the early → V4 → concept ladder.**
+**1. A double dissociation across the early → V4 → higher-visual ladder.**
 With regularization and voxel count matched (k = 397), higher visual cortex
-("concept") decodes colour best, while early visual cortex (V1–V3) owns
+(all of nsdgeneral beyond V1–V4; `concept` in the code) decodes colour best, while early visual cortex (V1–V3) owns
 luminance. The crossover is a genuine interaction, not two coincidental effects
-(ΔΔR² = +0.024, *p* = 0.008).
+(ΔΔR² = +0.023, *p* = 0.008).
 
 ![colour vs luminance dissociation](figures/fig3_dissociation.png)
 
@@ -36,7 +36,7 @@ the most object-independent colour. This holds for a physical *and* a perceptual
 |---|---|
 | Attention (foreground vs background) | Not foreground-specific; follows retinotopy |
 | Decoder (ridge, elastic-net, linear SVM, RBF-kernel, MLP) | All agree; no nonlinear gain |
-| Split-half reliability | Per-participant profiles reproduce (*r* ≈ 0.9; 8/8) |
+| Split-half reliability | Per-participant profiles reproduce (*r* = 0.84–0.90; sign agrees 8/8) |
 | Signal quality (ncsnr) | Concept has the *lowest* SNR yet the *highest* decoding |
 | Isoluminant colour (NSD-synthetic) | No detectable hue decoding — but low-powered, reported with that caveat |
 
@@ -50,6 +50,6 @@ cortex may partly be reading object identity.
 ## Status
 
 A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in
-preparation. Provenance of every number: [`PROVENANCE.md`](PROVENANCE.md). Code verification: [`test_analysis.py`](test_analysis.py) (26 planted-ground-truth checks). Methods notes: [`docs/methods.md`](docs/methods.md). How to run:
+preparation. Provenance of every number: [`PROVENANCE.md`](PROVENANCE.md). Code verification: [`test_analysis.py`](test_analysis.py) (26 planted-ground-truth checks) and [`test_plumbing.py`](test_plumbing.py) (21 data-path checks). Methods notes: [`docs/methods.md`](docs/methods.md). How to run:
 [`README.md`](README.md). Code is MIT-licensed; the data is **not** — see
 [`DATA_TERMS.md`](DATA_TERMS.md).
