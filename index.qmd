@@ -11,8 +11,8 @@ abstract: |
   after removing three confounds (per-ROI regularization, voxel-count, and a
   trial-alignment data-hygiene issue), we find a functional dissociation that
   replicates across all eight subjects: higher visual cortex decodes **color**
-  best, early visual cortex (V1–V3) uniquely decodes **luminance**, and area V4
-, the textbook "color area", shows no special advantage for *raw pixel* color.
+  best, early visual cortex (V1–V3) uniquely decodes **luminance**, and area V4,
+  the textbook "color area", shows no special advantage for *raw pixel* color.
   Both directions of the dissociation are statistically reliable.
 bibliography: references.bib
 ---
