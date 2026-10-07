@@ -5,7 +5,7 @@ Verification suite for the analysis logic behind the preprint.
 
 The question this answers: *how do we know the models were written correctly?*
 We cannot prove correctness, but we can plant known ground truth and check the
-code recovers it — and plant a known null and check the code reports nothing.
+code recovers it, and plant a known null and check the code reports nothing.
 Each test targets a specific claim the paper depends on.
 
 Run:
@@ -42,7 +42,7 @@ def _load(modname, path):
 
 
 # =====================================================================
-# 1. STATISTICS  (pure NumPy — always runnable)
+# 1. STATISTICS  (pure NumPy, always runnable)
 # =====================================================================
 def test_statistics():
     print("\n1. STATISTICS (brain2vision/stats.py)")
@@ -56,7 +56,7 @@ def test_statistics():
           np.mean(np.array(ps) < 0.05) <= 0.08,
           f"observed {np.mean(np.array(ps) < 0.05):.3f}")
 
-    # A consistent effect must reach — and not exceed — the exact floor.
+    # A consistent effect must reach, and not exceed, the exact floor.
     p = paired(np.full(8, 0.05) + rng.normal(0, 1e-3, 8))[1]
     check("permutation floor is exactly 2/2^8", abs(p - 2 / 256) < 1e-12, f"p={p:.4f}")
 
@@ -101,7 +101,7 @@ def test_residualisation():
     n, n_obj, n_col = 2000, 80, 11
     objects = (rng.random((n, n_obj)) < 0.05).astype(float)     # sparse presence
     W = rng.normal(0, 1, (n_obj, n_col))
-    chromatic = rng.normal(0, 1, (n, n_col))                     # object-independent part
+    chromatic = rng.normal(0, 1, (n, n_col))                     # content-unpredicted part
     colour = objects @ W + chromatic                             # colour = semantic + chromatic
 
     # cross-validated residualisation, as in semantic_residual
@@ -116,9 +116,9 @@ def test_residualisation():
     check("residual is ~orthogonal to object presence", max(cors) < 0.12,
           f"max|r| = {max(cors):.3f}")
 
-    # (b) the residual must RETAIN the planted object-independent component
+    # (b) the residual must retain the planted content-unpredicted component
     r_keep = np.mean([abs(np.corrcoef(chromatic[:, k], resid[:, k])[0, 1]) for k in range(n_col)])
-    check("residual retains the object-independent (chromatic) component", r_keep > 0.5,
+    check("residual retains the content-unpredicted (chromatic) component", r_keep > 0.5,
           f"mean |r| with planted chromatic = {r_keep:.2f}")
 
     # (c) the residual must LOSE the planted semantic component
@@ -212,6 +212,12 @@ def test_split_half():
     check("halves are roughly balanced", 0.4 < isA.mean() < 0.6, f"{isA.mean():.2f}")
 
 
+# Size of the full suite. README.md and PROVENANCE.md quote this number, so if
+# you add or remove a check, update it here and in both files. The run fails if
+# the two disagree, which stops the documented count going stale.
+EXPECTED_CHECKS = 26
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--quick", action="store_true", help="skip the slower decoder tests")
@@ -224,19 +230,32 @@ def main():
 
     test_statistics()
     test_split_half()
+    skipped = None
     try:
         test_residualisation()
         test_pooling()
         if not args.quick:
             test_decoder()
     except ImportError as e:
-        print(f"\n  (skipped sklearn-dependent tests: {e})")
+        skipped = str(e)
 
     n, k = len(results), sum(results)
     print("\n" + "=" * 68)
-    print(f"{k}/{n} checks passed")
+    if skipped:
+        print(f"INCOMPLETE: {k}/{n} checks passed, but {EXPECTED_CHECKS - n} of "
+              f"{EXPECTED_CHECKS} did not run ({skipped}).")
+        print("Install scikit-learn and re-run for the full suite.")
+    elif args.quick:
+        print(f"{k}/{n} checks passed (--quick: decoder tests not run)")
+    else:
+        print(f"{k}/{n} checks passed")
+        if n != EXPECTED_CHECKS:
+            print(f"WARNING: ran {n} checks but EXPECTED_CHECKS is {EXPECTED_CHECKS}. "
+                  f"Update it here and the counts quoted in README.md and PROVENANCE.md.")
     print("=" * 68)
-    sys.exit(0 if k == n else 1)
+
+    complete = (not skipped) and (args.quick or n == EXPECTED_CHECKS)
+    sys.exit(0 if (k == n and complete) else 1)
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ at all. Two readings are possible and they have different consequences:
       check_split.py compared apples to oranges. Methods is right; one file's
       convention is misread.
 
-  (b) The webdataset's train/test split is NOT the shared-1000 split at all —
+  (b) The webdataset's train/test split is NOT the shared-1000 split at all:
       it is a per-participant held-out subset of that participant's own images.
       The evaluation is still clean (no image appears on both sides), but the
       Methods sentence "the held-out test set comprised trials whose image

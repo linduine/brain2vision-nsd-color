@@ -10,14 +10,14 @@ reading with proper inference:
   * Benjamini-Hochberg FDR correction across the whole family of tests.
 
 It reports the main-effect contrasts (which ROI decodes color / luminance best)
-and — the key one — the *dissociation* (interaction): whether a region is more
+and, the key one, the *dissociation* (interaction): whether a region is more
 color-biased (colorR2 - luminanceR2) than another. That interaction is what makes
 the color/luminance crossover a real double dissociation rather than two
 coincidental main effects.
 
 Note on n=8: the exact sign-flip test has a two-sided p floor of 2/2^8 = 0.0078,
 reached when the observed difference is more extreme than all other sign
-combinations — i.e. "as significant as 8 subjects allow", not a marginal value.
+combinations, i.e. "as significant as 8 subjects allow", not a marginal value.
 
 Usage
 -----

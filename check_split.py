@@ -92,7 +92,7 @@ def scan(subj, all_shards=False):
         print(f"    {kind:5s} shards, flag={label:14s} {n:,}")
     disagree = flag_vs_dir[("train", 1)] + flag_vs_dir[("test", 0)]
     print(f"    -> the two definitions {'AGREE' if disagree == 0 else f'DISAGREE on {disagree:,} trials'}")
-    return entries, per_shard
+    return entries, per_shard, flag_vs_dir
 
 
 def main():
@@ -100,9 +100,9 @@ def main():
     ap.add_argument("--subj", type=int, default=3)
     args = ap.parse_args()
 
-    entries, per_shard = scan(args.subj)
+    entries, per_shard, _ = scan(args.subj)
     print("=" * 70)
-    print(f"SPLIT DIAGNOSTIC — subj{args.subj:02d}")
+    print(f"SPLIT DIAGNOSTIC: subj{args.subj:02d}")
     print("=" * 70)
 
     train = [(r, i) for k, r, i in entries if k == "train"]

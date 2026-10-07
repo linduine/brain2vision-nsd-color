@@ -52,7 +52,7 @@ def main():
           f"top1={res['top1']:.3f} (chance {1/len(COLOR_NAMES):.3f})")
     assert res["overall_r2"] > 0.5 and res["top1"] > 0.5, "decoder failed to learn"
 
-    print("\nSMOKE TEST PASSED — install + color pipeline work.")
+    print("\nSMOKE TEST PASSED: install + color pipeline work.")
 
 
 if __name__ == "__main__":

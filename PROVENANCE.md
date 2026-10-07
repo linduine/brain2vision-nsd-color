@@ -1,7 +1,7 @@
 # Provenance: which file backs which result
 
-Every number in the preprint (*"Is colour in human visual cortex chromatic or
-semantic?"*) traces to a `*_summary.npy` file in the repository root. This
+Every number in the preprint (*"Is color in the human visual cortex chromatic or
+content-predictable?"*) traces to a `*_summary.npy` file in the repository root. This
 document maps result → file → command, so the analysis can be re-run or audited
 without guesswork.
 
@@ -14,7 +14,7 @@ matched the manuscript.
 |---|---|---|
 | `roi_*_summary.npy`, `reliability_*`, `ncsnr_*` | **yes** (~220 KB) | derived per-participant R² only; every number in the paper traces to these |
 | `stats_table_v2.json`, figures, all analysis and verification code | **yes** | the reproducibility record |
-| `data/*.npy` — per-image colour, luminance, semantic and stuff targets | **no** (~136 MB) | derived from the NSD/COCO stimuli, large, and regenerable by the commands in §2 and §7 |
+| `data/*.npy` — per-image color, luminance, semantic and stuff targets | **no** (~136 MB) | derived from the NSD/COCO stimuli, large, and regenerable by the commands in §2 and §7 |
 | Raw NSD betas, region masks, COCO images | **no** | the NSD Terms of Use forbid redistribution |
 
 Filenames under `data/` appear throughout this document as *the outputs of the
@@ -30,38 +30,38 @@ Result files are named `roi_<target><variant>_<n>subj_summary.npy`:
 
 | Element | Meaning |
 |---|---|
-| `color` | physical colour target (HSV rules → 11 basic colour terms) |
-| `pcolor` | **perceptual** colour target (van de Weijer colour-naming model) |
-| `colorresid` / `pcolorresid` | same target, **residualised** against 80-way COCO object presence |
+| `color` | physical color target (HSV rules → 11 basic color terms) |
+| `pcolor` | **perceptual** color target (van de Weijer color-naming model) |
+| `colorresid` / `pcolorresid` | same target, **residualized** against 80-way COCO object presence |
 | `luminance` | 11-bin brightness target |
-| `fgcolor` / `bgcolor` | colour of the **foreground** (inside object box) / **background** |
+| `fgcolor` / `bgcolor` | color of the **foreground** (inside object box) / **background** |
 | `synth_*` | NSD-synthetic (isoluminant) analyses |
-| *(no suffix)* | **uniform** pooling of per-colour R² — superseded |
+| *(no suffix)* | **uniform** pooling of per-color R² — superseded |
 | `_vw` | **variance-weighted** pooling — *this is what the paper reports* |
 | `_clean` / `_cleanvw` | restricted to the clean fg/bg image subset (see §4) |
 | `_elasticnet`, `_kernel`, `_svr`, `_mlp`, `_mlp2` | alternative decoders |
 
 > **Why `_vw` matters.** Overall R² averages across the 11 target bins, and the
-> colour bins are wildly unequal: purple carries **0.2%** of the total target
-> variance and gray/blue about **19%** each — a 115:1 ratio between the most and
+> color bins are wildly unequal: purple carries **0.2%** of the total target
+> variance and gray/blue about **19%** each, a 115:1 ratio between the most and
 > least variable bin. A near-constant bin cannot be predicted, so its held-out R²
 > is ~0 or negative; under a uniform mean it nonetheless counts as much as blue.
-> Variance weighting lets each colour contribute in proportion to how much it
-> actually varies. Measured on the `_v2` runs, uniform pooling understates colour
+> Variance weighting lets each color contribute in proportion to how much it
+> actually varies. Measured on the `_v2` runs, uniform pooling understates color
 > decoding by ~0.021 in every region (early 0.032 vs 0.054; V4 0.029 vs 0.049;
 > higher 0.044 vs 0.066). **All headline numbers use `_vw`.**
 
 > **Why luminance is also `_vw`.** The double-dissociation interaction subtracts a
-> luminance R² from a colour R², so the two targets **must be pooled identically**
-> — otherwise the subtraction mixes two scales that differ by ~0.021 for purely
+> luminance R² from a color R², so the two targets **must be pooled identically**
+>, otherwise the subtraction mixes two scales that differ by ~0.021 for purely
 > bookkeeping reasons. Matching them costs almost nothing on the luminance side:
 > the 11 brightness bins are evenly populated (variance ratio 2.7:1, versus 115:1
-> for colour), so uniform and variance pooling agree to ~0.0017 (early 0.0285 vs
+> for color), so uniform and variance pooling agree to ~0.0017 (early 0.0285 vs
 > 0.0263; higher 0.0171 vs 0.0156). The interaction is +0.0236 under uniform
-> pooling and **+0.0231** under variance weighting — the reported value.
+> pooling and **+0.0231** under variance weighting, the reported value.
 >
 > Note also that the pooling shift is near-constant across regions (+0.0218 /
-> +0.0206 / +0.0220 for colour), so it largely cancels in any region *difference*.
+> +0.0206 / +0.0220 for color), so it largely cancels in any region *difference*.
 > Pooling affects absolute values, not the contrasts the paper reports.
 
 ---
@@ -96,7 +96,7 @@ Result files are named `roi_<target><variant>_<n>subj_summary.npy`:
 
 ---
 
-## 3. Superseded files — **do not cite these**
+## 3. Superseded files: **do not cite these**
 
 Kept for history; they are *not* the reported analyses.
 
@@ -106,14 +106,14 @@ Kept for history; they are *not* the reported analyses.
 | `roi_luminance_8subj_summary.npy` (0.029/0.012/0.017) | uniform pooling |
 | `roi_colorresid_8subj_summary.npy` | uniform pooling |
 | `roi_color_7subj_summary.npy` | earlier 7-subject run |
-| `roi_color_mlp_8subj_summary.npy` (−0.268/−0.261/−0.308) | **unregularised** MLP; overfit. Replaced by `mlp2` |
+| `roi_color_mlp_8subj_summary.npy` (−0.268/−0.261/−0.308) | **unregularized** MLP; overfit. Replaced by `mlp2` |
 | `roi_fgcolor_vw` / `roi_bgcolor_vw` | full 73k image set — Methods describe the *clean* subset, so the paper uses `cleanvw` |
 | `roi_fgcolor_clean` / `roi_bgcolor_clean` | clean subset but *uniform* pooling |
 | `roi_fgcolor_8subj` / `roi_bgcolor_8subj` | full set, uniform pooling |
 | `roi_synth_hue_avg*` | trial-averaged variants of the synthetic hue analysis |
 | all `*_8subj_summary.npy` without `_v2` | pre-fix webdataset shard selection (§4b); kept for the before/after comparison in `compare_runs.py` |
 
-> ⚠️ **The fg/bg family is the easiest to confuse** — four variants exist that
+> ⚠️ **The fg/bg family is the easiest to confuse**, four variants exist that
 > differ in both image subset and R² pooling, and they do not all agree in sign.
 > The paper uses **`_cleanvw`** (clean subset + variance weighting).
 
@@ -124,17 +124,17 @@ Kept for history; they are *not* the reported analyses.
 Built by `fg_bg_color_targets` with a single-dominant-object filter and coverage
 bounds. Recoverable from the saved targets:
 
-- `data/fgbg_clean_fg.npy` / `data/fgbg_clean_bg.npy` — **16,808 images** (of 73,000, 23%)
-- `data/fgbg_clean_coverage.npy` — box coverage ranges **0.10 – 0.70** of the frame
+- `data/fgbg_clean_fg.npy` / `data/fgbg_clean_bg.npy`: **16,808 images** (of 73,000, 23%)
+- `data/fgbg_clean_coverage.npy`: box coverage ranges **0.10 – 0.70** of the frame
   (mean 0.32), confirming the coverage filter
-- Full (unfiltered) versions: `data/fgbg_fg.npy` / `data/fgbg_bg.npy` — 73,000 images
+- Full (unfiltered) versions: `data/fgbg_fg.npy` / `data/fgbg_bg.npy`: 73,000 images
 
 ---
 
 ## 4a. Region naming
 
 The three ROI keys in `roi.py` are `early_v1v3`, `v4_color` and **`concept`**.
-`concept` is our own shorthand, not a term from the literature — it is the
+`concept` is our own shorthand, not a term from the literature, it is the
 `higher_vis` mask, i.e. **everything in `nsdgeneral` beyond V1–V4** (participant
 1: 11,067 of 15,724 voxels, 70%). The field's term for this territory is
 **higher visual cortex**; "conceptual" as a regional label usually refers to
@@ -158,7 +158,7 @@ The MindEye2 webdataset ships **three** directories per participant:
 Selecting shards by the substring `"test"` matches both `test` and `new_test`,
 so every held-out trial is read twice. For participant 3 that inflated the
 held-out set from 2,371 to 4,484 trials (2,113 duplicates). Training data was
-unaffected, and there was no leakage — but the held-out average was weighted
+unaffected, and there was no leakage, but the held-out average was weighted
 ~2x toward the duplicated images.
 
 **Fixed:** `_select_shard_dirs` reads the actual listing and drops a legacy
@@ -189,7 +189,7 @@ alphas=8, max_iter=3000)`. Two **solver-level** settings were changed after the
 | `n_jobs` | 1 | 3 | the 3 CV folds run in parallel. The original comment said this avoided "per-core data copies", which held when `X` was a whole ROI; after voxel matching `Xtr` is k=397 columns (~34 MB), so 3 workers cost ~100 MB. |
 | `selection` | cyclic (default) | `"random"`, `random_state=0` | neighbouring voxels are highly correlated and cyclic coordinate descent zig-zags on correlated designs. |
 
-Neither changes the objective, the penalty, or its minimiser — only the route to
+Neither changes the objective, the penalty, or its minimiser, only the route to
 it. **Verified rather than assumed:** `test_elasticnet_speedup.py` refits a
 participant already computed under the old settings and compares per ROI, with a
 pass threshold of |Δ| < 0.002 (an order of magnitude below the smallest reported
@@ -212,7 +212,7 @@ python -m brain2vision.luminance_targets   --images data/coco_images_224_float16
 python -m brain2vision.perceptual_color_targets --images data/coco_images_224_float16.hdf5 \
        --w2c data/w2c.npy --out data/color_targets_perceptual.npy
 python -m brain2vision.semantic_targets    # 80-way COCO object presence
-python -m brain2vision.semantic_residual   # residualise colour against objects (5-fold CV ridge)
+python -m brain2vision.semantic_residual   # residualize color against objects (5-fold CV ridge)
 python -m brain2vision.fg_bg_color_targets --images data/coco_images_224_float16.hdf5 \
        --single-object --coverage-min 0.10 --coverage-max 0.70 --out data/fgbg_clean
 
@@ -272,7 +272,7 @@ evidence in the saved outputs. Each row below states which.
 
 `--subjects 1 2 3 4 5 6 7 8` for every file except `roi_color_7subj` (n = 7),
 confirmed from the `subjects` field. The target is identified by the `labels`
-field (11 colour terms vs `L0…L10` luminance bins).
+field (11 color terms vs `L0…L10` luminance bins).
 
 **Not recoverable:** `--n-draws` is not stored and leaves no trace in the output.
 Reported linear runs used 25 and nonlinear runs 3; the result is insensitive to
@@ -286,25 +286,25 @@ pooled overall R² (`agg[roi]["ov"]`). So the flag can be tested directly:
 ```python
 import numpy as np
 d   = np.load("roi_color_vw_8subj_summary.npy", allow_pickle=True).item()
-per = np.array(d["agg"]["concept"]["per"])   # per-colour R², per subject
+per = np.array(d["agg"]["concept"]["per"])   # per-color R², per subject
 ov  = np.array(d["agg"]["concept"]["ov"])    # pooled R², per subject
 np.allclose(per.mean(1), ov, atol=2e-3)      # True -> uniform; False -> variance-weighted
 ```
 
-For **colour** targets this is decisive: near-absent bins (purple) make uniform
+For **color** targets this is decisive: near-absent bins (purple) make uniform
 pooling differ sharply from variance weighting (e.g. higher visual cortex 0.044 vs 0.066).
 
-⚠️ For **luminance** it is *not* decisive — the 11 brightness bins are evenly
+⚠️ For **luminance** it is *not* decisive, the 11 brightness bins are evenly
 populated, so the two poolings agree to ~0.0017 (0.0171 vs 0.0156). The stored
 config in `roi_luminance_vw` confirms `variance`. This is also why the
-colour-minus-luminance interaction is unchanged (+0.024) under either pooling.
+color-minus-luminance interaction is unchanged (+0.024) under either pooling.
 
 ---
 
 ## 6. Verification
 
 Correctness of the analysis code is checked by planting a known answer and
-confirming the code recovers it — and planting a known null and confirming it
+confirming the code recovers it, and planting a known null and confirming it
 reports nothing. Run:
 
 ```bash
@@ -315,10 +315,10 @@ python test_analysis.py          # 26 checks, no fMRI data required
 |---|---|
 | Decoder recovers a planted linear signal | R² = +0.51 |
 | Shuffled targets destroy decoding | R² = −0.01 |
-| Pure-noise voxels do not decode | R² = −0.01 (RidgeCV selects max regularisation) |
+| Pure-noise voxels do not decode | R² = −0.01 (RidgeCV selects max regularization) |
 | Residual is orthogonal to object regressors | max \|r\| = 0.013 |
-| Residual **retains** a planted object-independent component | r = 0.98 |
-| Residual **removes** a planted object-predicted component | r = 0.02 |
+| Residual **retains** a planted content-unpredicted component | r = 0.98 |
+| Residual **removes** a planted content-predicted component | r = 0.02 |
 | A near-constant bin distorts uniform pooling | uniform +0.015 vs true +0.902 |
 | Variance weighting tracks the informative target | +0.902 |
 | Permutation test calibrated under the null | P(p<0.05) = 0.062 |
@@ -352,7 +352,7 @@ python test_plumbing.py          # 21 checks
 
 ⚠️ **What the fg/bg reconstruction does and does not show.** The exact
 reconstruction (error 0.00000) verifies *arithmetic consistency*: the two
-histograms were computed from the same images as the main colour target, the
+histograms were computed from the same images as the main color target, the
 in-box / out-of-box masking has no gaps or double-counting, and the coverage
 values correctly describe the area split. It is a plumbing check on the masking
 code.
@@ -360,8 +360,8 @@ code.
 It is **not** evidence that the split cleanly separates *foreground* from
 *background* as perceptual categories. A COCO bounding box is rectangular, so the
 "foreground" region contains surrounding background pixels, and the "background"
-region may contain other objects. That operationalisation is deliberately coarse
-— which is why the paper describes the resulting test as conservative and notes
+region may contain other objects. That operationalization is deliberately coarse
+ which is why the paper describes the resulting test as conservative and notes
 that pixel-accurate segmentation would sharpen it. The arithmetic is exact; the
 construct is approximate.
 
@@ -371,7 +371,7 @@ run log.
 
 Two notes. The kernel decoder scoring lower on a **known-linear** planted signal
 independently reproduces the paper's finding that nonlinear decoders do not
-exceed linear ones — it is expected behaviour, not a data quirk. And these tests
+exceed linear ones, it is expected behavior, not a data quirk. And these tests
 verify the **analysis logic**, not the data plumbing; the betas↔image alignment is
 verified separately by falsification in
 [`brain2vision/alignment_check.py`](brain2vision/alignment_check.py), where
@@ -391,7 +391,7 @@ which is the achievable standard.
 - **95% CI** = 20,000-sample subject-level paired-difference bootstrap.
 - **q** = Benjamini–Hochberg FDR within each family of contrasts.
 - The decisive tests are **interactions**, not single differences:
-  colour-minus-luminance across regions, and the region-by-residualisation
+  color-minus-luminance across regions, and the region-by-residualization
   interaction (does decoding fall *more* in one region than another).
 
 ---
@@ -400,12 +400,12 @@ which is the achievable standard.
 
 Voxel matching gives the decoder k = 397 voxels for every region, but that is
 ~58% of V4 and only ~3.6% of higher visual cortex. To test whether the
-object-bound colour signal could be confined to a small sub-region,
+content-predictable color signal could be confined to a small sub-region,
 `replicate_subjects._matched_draws` now also returns the **individual per-draw
 R² values** (field `ovd` in the summary), not just their mean.
 
 The change is additive: `ov` is still the mean over draws and is byte-identical
-to before — verified against the canonical run, `max |diff| = 0.00e+00` in all
+to before, verified against the canonical run, `max |diff| = 0.00e+00` in all
 three regions.
 
 ```bash
@@ -429,17 +429,17 @@ between-participant SEM in every region (0.58 early, 0.26 V4, 0.84 higher).
 
 **What this licenses:** the signal cannot be confined to a small sub-region,
 since a random 3.6% sample would then miss it. **What it does not licence:** a
-claim that the signal is uniformly or "pervasively" distributed — the result is
+claim that the signal is uniformly or "pervasively" distributed, the result is
 not unanimous, and two participants had draws falling marginally below their own
 V4 value.
 
 ---
 
-## 7b. Scene-content residualisation with COCO-Stuff (added 13 Aug 2026)
+## 7b. Scene-content residualization with COCO-Stuff (added 13 Aug 2026)
 
-The 80 COCO categories are all **things** — discrete objects. They contain no
+The 80 COCO categories are all **things**, discrete objects. They contain no
 sky, grass, road, water or wall, which are exactly the correlations the
-Introduction uses to motivate residualisation. `brain2vision/stuff_targets.py`
+Introduction uses to motivate residualization. `brain2vision/stuff_targets.py`
 adds the 91 **COCO-Stuff** categories, binary presence, encoded identically to
 things so the comparison isolates content type rather than representation.
 
@@ -457,18 +457,18 @@ python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
 ```
 
 **Validation of the stuff vector** (before any decoding): each category pulls the
-colour it should — grass and tree → green, sky and sea → blue, snow → white,
-with effects of +0.05 to +0.21 on the colour histogram. Categories that appear
+color it should, grass and tree → green, sky and sea → blue, snow → white,
+with effects of +0.05 to +0.21 on the color histogram. Categories that appear
 not to (dirt, wood, clouds) are explained by co-occurrence, e.g. P(tree | dirt) =
 0.63 against a base rate of 0.32.
 
 **Image-statistics result** (Extended Data S10, Table S5). Variance-weighted
-out-of-sample R²(colour ~ content): things 0.126, stuff 0.146, both 0.174 —
+out-of-sample R²(color ~ content): things 0.126, stuff 0.145, both 0.174 
 **56% shared**. Object labels partly proxy for scene context: P(snow | skis) =
 0.95, P(railroad | train) = 0.73.
 
 **Brain result** (Table S6). Removing all 171 categories left **83%** of the
-colour-target variance intact (effective dimensionality 6.0 vs 5.9 raw) and did
+color-target variance intact (effective dimensionality 6.0 vs 5.9 raw) and did
 not eliminate the reversal: early 0.012, V4 0.007, higher 0.005; early − higher
 = +0.007, p = 0.008, 8/8. Decomposed, the effect is **achromatic** (early 0.028
 vs higher 0.007; +0.021, p = 0.008, 8/8); the chromatic residual is ≤ 0.003
@@ -480,10 +480,10 @@ residual at p = 0.039 (6/8) under the 171-category scheme but not under the
 the data and does not replicate across schemes. Recorded so the decision not to
 report it is auditable.
 
-### The colour/luminance asymmetry (Extended Data S10, Tables S7–S8)
+### The color/luminance asymmetry (Extended Data S10, Tables S7–S8)
 
-The same 171-category residualisation applied to the **luminance** target. Note
-`--labels`: without it the summary records brightness bins under colour names.
+The same 171-category residualization applied to the **luminance** target. Note
+`--labels`: without it the summary records brightness bins under color names.
 
 ```bash
 python -m brain2vision.semantic_residual --color data/luminance_targets.npy \
@@ -497,45 +497,45 @@ python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
     --out roi_lumbothresid_vw_8subj.png
 ```
 
-Annotated content explains **2.5× more of image colour than of image luminance**
-(variance-weighted out-of-sample R² 0.174 vs 0.069), leaving 83% vs 93% of the
+Annotated content explains **2.5× more of image color than of image luminance**
+(variance-weighted out-of-sample R² 0.174 vs 0.068), leaving 83% vs 93% of the
 respective targets. Decoding the luminance residual: **early 0.0096**
 (p = 0.008, 8/8, CI [+0.006, +0.013]), **V4 −0.0008** (p = 0.594) and
-**higher +0.0005** (p = 0.680) — neither distinguishable from zero. Every
+**higher +0.0005** (p = 0.680), neither distinguishable from zero. Every
 participant shows early > V4 and early > higher (8/8 each).
 
 So content-independent **luminance** is carried by early retinotopic cortex
 alone, while content-independent **hue** is not reliably carried anywhere
 (chromatic residual ≤ 0.003 in every region). This asymmetry replaced the
 Discussion's earlier claim that chromatic content should be sourced from the
-early stream — which these data falsify.
+early stream, which these data falsify.
 
 **Labelling fix (13 Aug).** `semantic_residual` previously printed every target's
-columns as the 11 colour names, so luminance bins were reported as "red, orange,
+columns as the 11 color names, so luminance bins were reported as "red, orange,
 yellow…". Column names are now derived from the target filename, overridable with
 `--labels`, and the module prints both uniform and variance-weighted R² so the
-two are not conflated. Numbers were never affected — only labels.
+two are not conflated. Numbers were never affected, only labels.
 
 ---
 
 ## 7c. The "reversal" was a change of mixture (corrected 13 Aug 2026)
 
-**Nina caught this.** The paper claimed that residualisation *reversed the
+**Nina caught this.** The paper claimed that residualization *reversed the
 regional ordering*. It does not. The aggregate ordering changes, but neither
 component ordering does.
 
-The 11-term colour target contains 3 achromatic terms (black, white, grey)
+The 11-term color target contains 3 achromatic terms (black, white, grey)
 carrying **43%** of its variance. Decomposing by subset:
 
 | target | chromatic early | chromatic higher | achromatic early | achromatic higher |
 |---|---|---|---|---|
-| raw colour | 0.052 | **0.081** (p=0.008, 8/8) | **0.057** (p=0.023, 7/8) | 0.041 |
+| raw color | 0.052 | **0.081** (p=0.008, 8/8) | **0.057** (p=0.023, 7/8) | 0.041 |
 | residual, things (80) | 0.007 | 0.007 (n.s., 4/8) | **0.036** (p=0.008, 8/8) | 0.011 |
 | residual, +stuff (171) | 0.001 | 0.002 (n.s., 4/8) | **0.028** (p=0.008, 8/8) | 0.007 |
 
 Higher visual cortex leads on chromatic terms and early cortex on achromatic
-terms **at every stage, including the raw target**. Residualisation removes the
-chromatic component — the one higher visual cortex led on — almost entirely, and
+terms **at every stage, including the raw target**. Residualization removes the
+chromatic component, the one higher visual cortex led on, almost entirely, and
 spares the achromatic one. The aggregate flips because the *mixture* changes.
 
 Arithmetic check: raw higher = 0.429×0.041 + 0.571×0.081 = 0.064 ≈ 0.066 ✓;
@@ -545,14 +545,23 @@ residual early = 0.429×0.036 + 0.571×0.007 = 0.019 ≈ 0.018 ✓.
 Significance Statement, Results, Discussion, Figure 4 caption, Extended Data S2
 and S10, and the contrast names in `build_stats_table.py` / `make_figures.py`
 ("Reversal" → "Residual target"). The claim is now that the two arms of the
-dissociation differ in whether they survive content removal — which is what the
+dissociation differ in whether they survive content removal, which is what the
 data show, and is stronger because a reviewer running this decomposition finds
 the same thing.
 
 **Reproduce it:**
 
 ```python
-# per-subject per-colour R² are in agg[roi]["per"]; weights from the target variance
+# per-subject per-color R² are in agg[roi]["per"]. Subsets are pooled by the
+# color target's variance over the full stimulus set. The target is a per-image
+# color histogram, so these weights describe how much each color term varies
+# across the images: they are estimated from all 73,000 rather than from the
+# 1,000 held-out, and they are identical for every participant, including the
+# four who saw only part of the shared-1000.
+#
+# This is deliberately not sklearn's variance_weighted average, which weights by
+# the held-out column sums of squares. The subset rows are a separate pooling and
+# do not sum to the aggregate — see the caption of Table S6, which says so.
 w = np.load('data/color_targets.npy').var(0); w /= w.sum()
 ia = [8, 9, 10]                      # black, white, gray
 ic = [0,1,2,3,4,5,6,7]               # the eight chromatic terms
@@ -563,7 +572,7 @@ ic = [0,1,2,3,4,5,6,7]               # the eight chromatic terms
 
 ## 7d. Trial bookkeeping, all eight participants (14 Aug 2026)
 
-`python check_betas.py` — run with the full participant set.
+`python check_betas.py`, run with the full participant set.
 
 | subj | sessions | trials | training | held out | unique images | duplicate reads |
 |---|---|---|---|---|---|---|
@@ -585,8 +594,8 @@ training + held out = trials for every participant.
 `duplicate (row,id) reads: 0`. The bug found on 12 Aug is confirmed fixed across
 all eight, not just the ones checked at the time.
 
-Held-out counts fall slightly below nominal for the shorter participants —
-2,371 against ~2,400 and 2,188 against ~2,250 — because fewer completed sessions
+Held-out counts fall slightly below nominal for the shorter participants 
+2,371 against ~2,400 and 2,188 against ~2,250, because fewer completed sessions
 means fewer shared-1000 repeats. Expected, not an error.
 
 Reported in Methods and Extended Data S11 (Table S10).

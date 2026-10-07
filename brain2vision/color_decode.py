@@ -166,7 +166,7 @@ def read_behav_alignment(subj, cache_dir=None, legacy_shards=False):
     if n_train == 0 or n_test == 0:
         raise RuntimeError(
             f"subj{subj:02d}: the split has {n_train} training and {n_test} "
-            f"held-out trials — one side is empty, so nothing can be fitted.\n"
+            f"held-out trials, one side is empty, so nothing can be fitted.\n"
             f"  shards read: {sorted({t.split('/')[2] for t in tars})}\n"
             f"  Every trial was classified the same way. Check that the shard "
             f"selection includes a training directory, and that behav column "
@@ -179,7 +179,7 @@ def read_behav_alignment(subj, cache_dir=None, legacy_shards=False):
 # --------------------------------------------------------------------------- #
 # Callers that decode several ROIs for the same participant (replicate_subjects,
 # reliability) previously called build_xy once per ROI, which re-scanned the
-# webdataset and re-read the whole betas file every time — three times the I/O
+# webdataset and re-read the whole betas file every time, three times the I/O
 # for the same bytes. build_xy_multi does that work once per participant; the
 # alignment is additionally memoised because it is small and expensive to fetch.
 _ALIGN_CACHE = {}
@@ -212,7 +212,7 @@ def build_xy_multi(subj, color_targets_npy, roi_sets, return_ids=False):
 
     Memory note: the betas are read once into the UNION of the requested ROI
     masks, then each ROI is a column slice of that. Peak usage is therefore the
-    union matrix plus one ROI matrix, rather than one ROI matrix at a time — a
+    union matrix plus one ROI matrix, rather than one ROI matrix at a time, a
     modest increase in exchange for reading the file once instead of N times.
     """
     import gc
@@ -325,9 +325,17 @@ def _shared1000_mask(nsd_ids):
 # Models + evaluation
 # --------------------------------------------------------------------------- #
 def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None,
-               r2_weighting="uniform"):
+               r2_weighting="uniform", test_ids=None, return_pred=False):
     # `labels` names the target columns (default: the 11 colors). Passing a
     # different list lets this decode any target, e.g. luminance bins.
+    #
+    # return_pred is ADDITIVE and changes nothing about the fit, the metrics or
+    # the existing keys. When True the returned dict also carries "pred" and
+    # "yte" -- the held-out predictions and targets, in test-row order -- so a
+    # caller can score arbitrary SUBSETS of the held-out set (e.g. dark vs
+    # bright images) without refitting and without duplicating the
+    # standardisation and alpha-selection logic, which must stay identical to
+    # the published runs.
     #
     # r2_weighting controls how the per-target R^2 values are pooled into the
     # overall R^2:
@@ -360,10 +368,10 @@ def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None,
         print(f"RidgeCV selected alpha = {float(np.atleast_1d(reg.alpha_)[0]):.1f}")
     elif model == "elasticnet":
         # Sparse LINEAR decoder: shrinks AND zeros out voxels. Robustness check
-        # within linear models — does a different regularizer give the same answer?
+        # within linear models, does a different regularizer give the same answer?
         # PERFORMANCE (does not change the objective or its optimum):
         #   n_jobs   the 3 CV folds run in parallel. The old comment here said
-        #            n_jobs=1 avoided "per-core data copies" — true when X was a
+        #            n_jobs=1 avoided "per-core data copies", true when X was a
         #            whole ROI, but after voxel matching Xtr is k=397 columns,
         #            i.e. ~34 MB, so three workers cost ~100 MB. Freed 2-3x.
         #   selection="random"  coordinate descent visits coefficients in random
@@ -464,6 +472,55 @@ def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None,
     overall_r2 = float(r2_score(yte, pred, multioutput=mo))
     top1 = (pred.argmax(1) == yte.argmax(1)).mean()   # dominant-bin accuracy
 
+    # Optional: the same R2 computed over IMAGES rather than trials.
+    #
+    # The held-out set contains several trials per image (2,371 trials over 930
+    # images for participant 3), so the number of independent stimuli is smaller
+    # than the number of rows R2 is computed over. Reviewer comment [19] asks
+    # whether that matters. Passing `test_ids` adds an image-averaged figure
+    # computed from the SAME predictions, so the only difference between the two
+    # numbers is the aggregation and nothing else can drift between them.
+    #
+    # A target is a property of the image, so every repeat of an image carries an
+    # identical target row. That is asserted rather than assumed, if it were
+    # ever false, averaging the targets would be silently wrong.
+    overall_r2_byimage = overall_r2_byimage_fixedw = None
+    if test_ids is not None:
+        tid = np.asarray(test_ids)
+        if len(tid) != len(yte):
+            raise ValueError(f"test_ids has {len(tid)} entries, "
+                             f"the held-out set has {len(yte)}")
+        uniq = np.unique(tid)
+        yi = np.stack([yte[tid == g].mean(0) for g in uniq])
+        pi = np.stack([pred[tid == g].mean(0) for g in uniq])
+        spread = max(float(np.ptp(yte[tid == g], axis=0).max()) for g in uniq)
+        if spread > 1e-9:
+            raise ValueError(f"targets differ between repeats of the same image "
+                             f"(max within-image range {spread:.2e}); averaging "
+                             f"them would be wrong")
+        overall_r2_byimage = float(r2_score(yi, pi, multioutput=mo))
+
+        # And the same thing with the POOLING WEIGHTS HELD FIXED.
+        #
+        # "variance_weighted" derives its weights from whichever y_true it is
+        # given: sklearn uses each column's total sum of squares. At trial level
+        # those come from yte, where an image appears once per presentation; at
+        # image level from yi, where it appears once. Repeat counts are NOT
+        # uniform, participants 5 and 7 have exactly 3 trials per image, but 4
+        # and 8 have 2,188 over 907 images and 6 has 2,371 over 930, so for
+        # those participants the two figures differ in how the eleven colour
+        # bins are weighted against each other, not only in aggregation.
+        #
+        # Two variables moving at once is what this comparison exists to avoid.
+        # This third figure re-pools the image-level per-column R2 using the
+        # TRIAL-level weights, so aggregation is the only thing that changes.
+        # Where repeats are uniform it is identical to the line above by
+        # construction, which is a free check that the weighting logic is right.
+        w_trial = ((yte - yte.mean(0)) ** 2).sum(0)
+        r2i_raw = r2_score(yi, pi, multioutput="raw_values")
+        overall_r2_byimage_fixedw = float(
+            (r2i_raw * w_trial).sum() / max(w_trial.sum(), 1e-12))
+
     print(f"\n=== decode ({model}, R2 pooling={r2_weighting}) ===")
     print(f"overall R^2 : {overall_r2:.3f}")
     print(f"dominant-bin top-1 acc : {top1:.3f} "
@@ -471,8 +528,19 @@ def train_eval(X, y, is_test, model="ridge", alpha=1000.0, labels=None,
     print("per-target R^2:")
     for name, val in zip(labels, r2):
         print(f"   {name:8s} {val:+.3f}")
-    return {"overall_r2": overall_r2, "top1": top1,
-            "per_color_r2": dict(zip(labels, r2.tolist()))}
+    if overall_r2_byimage is not None:
+        print(f"overall R^2 (averaged within image, n={len(uniq)} images "
+              f"vs {len(yte)} trials) : {overall_r2_byimage:.3f}")
+        print(f"overall R^2 (image-averaged, trial-level pooling weights) : "
+              f"{overall_r2_byimage_fixedw:.3f}")
+    out = {"overall_r2": overall_r2, "top1": top1,
+           "per_color_r2": dict(zip(labels, r2.tolist())),
+           "overall_r2_byimage": overall_r2_byimage,
+           "overall_r2_byimage_fixedw": overall_r2_byimage_fixedw}
+    if return_pred:
+        out["pred"] = pred
+        out["yte"] = yte
+    return out
 
 
 def main():

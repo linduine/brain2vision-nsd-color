@@ -1,70 +1,70 @@
 # brain2vision-nsd
 
-> **New here?** Read the write-up first: **[`REPORT.md`](REPORT.md)** — the
+> **New here?** Read the write-up first: **[the project site](https://linduine.github.io/brain2vision-nsd-color/)**, the
 > question, the analysis, and the findings (with figures). This README is the
 > how-to-run guide.
 
 Decoding perceived **color and luminance** from human visual cortex using 7T
-fMRI from the **Natural Scenes Dataset (NSD)** — plus the ROI-selective loading,
+fMRI from the **Natural Scenes Dataset (NSD)**, plus the ROI-selective loading,
 CLIP / color / bounding-box target tooling behind it.
 
 Built on the MindEye2 preprocessed NSD release (`pscotti/mindeyev2`) with a path
-to raw NSD for fine-grained ROIs. Code is MIT-licensed; **the data is not** —
+to raw NSD for fine-grained ROIs. Code is MIT-licensed; **the data is not** 
 see [`DATA_TERMS.md`](DATA_TERMS.md).
 
 ## Findings
 
-Full write-up with methods and figures: **[`REPORT.md`](REPORT.md)**.
+Full write-up with methods and figures: **[the project site](https://linduine.github.io/brain2vision-nsd-color/)**.
 
-Short version — a replicated (all 8 subjects), confound-controlled functional
+Short version, a replicated (all 8 subjects), confound-controlled functional
 dissociation in how visual cortex represents color vs brightness:
 
 ![color vs luminance dissociation](figures/fig3_dissociation.png)
 
 - Color decodes above chance everywhere; controlling for regularization **and**
-  voxel count, **higher visual cortex decodes color best** (it's bound to object/
-  scene identity).
+  voxel count, **higher visual cortex decodes color best**, and that advantage is
+  largely predictable from the scene content the region represents.
 - **Early visual cortex (V1–V3)** is the only region that decodes **luminance** as
-  well as color — it owns the dark/bright end.
-- **V4** shows no special advantage for *raw pixel* color, consistent with its
-  role in *perceptual* color rather than low-level color.
+  well as color, it owns the dark/bright end.
+- **V4** shows no advantage on either target; in these data it sits intermediate
+  between early and higher visual cortex.
 
-Getting there meant removing three confounds in turn — fixed regularization,
-then ROI voxel count, then single-subject noise — plus a data-alignment fix. The
+Getting there meant removing three confounds in turn, fixed regularization,
+then ROI voxel count, then single-subject noise, plus a data-alignment fix. The
 report walks through each, because which comparison you run changes the answer.
 
 ## Update: confound-controlled follow-up (preprint in preparation)
 
-The report's central open question — *is higher visual cortex's colour advantage
-chromatic or semantic?* — has now been tested directly, with a battery of controls.
-**The colour advantage of higher visual cortex is largely object-bound.**
+The central open question, *is higher visual cortex's color advantage chromatic
+or content-predictable?*, has now been tested directly, with a battery of controls.
+**The color advantage of higher visual cortex is largely content-predictable.**
 
-- **Object-identity residualisation.** Removing the variance explained by object
-  presence (80 COCO categories) collapses colour decoding in every region, but
+- **Object-identity residualization.** Removing the variance explained by object
+  presence (80 COCO categories) collapses color decoding in every region, but
   *significantly more* in higher visual cortex (interaction *p* = 0.008), and the
-  regional ordering **reverses** — early cortex then carries the most
-  object-independent colour. Holds for a physical *and* a perceptual colour target.
-- **Attention.** Colour decoding is not foreground-specific; it follows retinotopy.
-- **Decoder-agnostic.** Ridge, elastic-net, linear SVM, RBF-kernel and a regularised
+  regional ordering **reverses**, early cortex then carries the most
+  content-unpredicted color. Holds for a physical *and* a perceptual color target.
+- **Attention.** Color decoding is not foreground-specific; it follows retinotopy.
+- **Decoder-agnostic.** Ridge, elastic-net, linear SVM, RBF-kernel and a regularized
   MLP all reproduce the dissociation; no nonlinear decoder beats a linear one.
 - **Reliability.** Per-participant region profiles reproduce across image-disjoint
   data halves (*r* ≈ 0.9; ordering reproduces in 8/8).
 - **Signal quality.** Higher visual cortex has the *lowest* noise-ceiling SNR yet the
-  *highest* colour decoding — data quality works against the effect, not for it.
+  *highest* color decoding, data quality works against the effect, not for it.
 - **Isoluminant control.** No detectable hue decoding without scene structure, though
   this control is low-powered and is reported with that caveat.
 
 New modules: `reliability` (split-half), `ncsnr_quality` (signal quality),
 `fg_bg_color_targets` (attention), `synthetic_decode` (isoluminant),
-`perceptual_color_targets` (colour naming).
+`perceptual_color_targets` (color naming).
 
-A preprint — *"Is colour in human visual cortex chromatic or semantic?"* — is in
+A preprint, *"Is color in the human visual cortex chromatic or content-predictable? A confound-controlled decoding study of the Natural Scenes Dataset"*, is in
 preparation.
 
 > **Verifying the code?** Run `python test_analysis.py` (26 checks: plant a known signal,
 > confirm the code recovers it; plant a known null, confirm it doesn't) and
 > `python test_plumbing.py` (21 checks on the actual derived targets: id alignment,
-> fg/bg partition, residualisation, split integrity).
+> fg/bg partition, residualization, split integrity).
 >
 > **Reproducing the paper?** [`PROVENANCE.md`](PROVENANCE.md) maps every reported number to
 > the exact `*_summary.npy` file and the command that produced it, and flags which of the
@@ -112,7 +112,7 @@ python -m brain2vision.replicate_subjects --subjects 1 2 3 4 5 6 7 8 \
     --out roi_luminance_8subj.png
 ```
 
-Result (8 subjects, matched to 397 voxels — see [`REPORT.md`](REPORT.md)):
+Result (8 subjects, matched to 397 voxels, see [the project site](https://linduine.github.io/brain2vision-nsd-color/)):
 
 ![color decoding by ROI](figures/fig1_color_by_roi.png)
 
@@ -156,7 +156,6 @@ brain2vision-nsd/
 │   └── color_shared_subject.py  # shared-subject V4 model
 ├── download_data.py       # fetch data into ./data (respects terms)
 ├── smoke_test.py          # offline install check (no data needed)
-├── REPORT.md              # the write-up: methods, findings, figures
 ├── figures/               # result figures
 ├── data/                  # gitignored; populated by download_data.py
 ├── docs/methods.md        # detailed methods, ROI structure, caveats

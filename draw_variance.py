@@ -76,7 +76,7 @@ def main(path: str) -> int:
               "    bash rerun_after_split_fix.sh main   # with FORCE=1 to overwrite")
         return 2
 
-    print(f"Per-draw R² spread — {path}\n")
+    print(f"Per-draw R² spread: {path}\n")
     print(f"{'region':8s}{'draws':>7s}{'mean':>9s}{'SD':>8s}{'min':>9s}{'max':>9s}"
           f"{'SD/mean':>9s}")
 

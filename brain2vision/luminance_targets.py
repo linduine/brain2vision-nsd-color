@@ -4,8 +4,8 @@ luminance_targets.py
 Build a per-image LUMINANCE (brightness) distribution target: an n-bin
 histogram of pixel brightness from dark (bin 0) to bright (bin n-1). This is the
 achromatic counterpart to color_targets.py, used to test whether early visual
-cortex — which looked luminance-driven in the color analysis (best at black and
-white) — actually decodes image brightness better than V4 / higher visual.
+cortex, which looked luminance-driven in the color analysis (best at black and
+white), actually decodes image brightness better than V4 / higher visual.
 
 Brightness uses the standard luma weighting: 0.299 R + 0.587 G + 0.114 B.
 

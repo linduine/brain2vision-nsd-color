@@ -119,7 +119,7 @@ def main():
         print(f"\n=== subject {subj} ===")
         res = {}
         # Default: one ROI at a time (peak memory = one ROI matrix, as before).
-        # The webdataset rescan is avoided either way — the alignment is memoised.
+        # The webdataset rescan is avoided either way, the alignment is memoised.
         data = (build_xy_multi(subj, args.target, ROI_SETS, return_ids=True)
                 if args.load_once else None)
         for s, f in ROI_SETS.items():
@@ -156,17 +156,29 @@ def main():
           "trait; low => it is measurement noise)")
 
     # scatter A vs B per region
-    fig, axes = plt.subplots(1, len(rois), figsize=(4 * len(rois), 4))
+    # Display names, not the internal ROI keys, and one shared axis range
+    # across the panels so the three are directly comparable.
+    NICE = {"early_v1v3": "Early (V1–V3)", "v4_color": "V4",
+            "concept": "Higher visual"}
+    lim = [min(min(A[s].min(), B[s].min()) for s in rois) - 0.005,
+           max(max(A[s].max(), B[s].max()) for s in rois) + 0.005]
+    fig, axes = plt.subplots(1, len(rois), figsize=(8, 3.5),
+                             sharex=True, sharey=True)
     axes = np.atleast_1d(axes)
     for ax, s in zip(axes, rois):
         ax.scatter(A[s], B[s], zorder=3)
-        lim = [min(A[s].min(), B[s].min()) - 0.005,
-               max(A[s].max(), B[s].max()) + 0.005]
         ax.plot(lim, lim, "k--", lw=.7)
         ax.set_xlim(lim); ax.set_ylim(lim)
-        ax.set_title(f"{s}\nr = {np.corrcoef(A[s], B[s])[0, 1]:+.2f}")
-        ax.set_xlabel("half A  R²"); ax.set_ylabel("half B  R²")
-    fig.tight_layout(); fig.savefig(args.out, dpi=140); plt.close(fig)
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_title(f"{NICE.get(s, s)}\nr = {np.corrcoef(A[s], B[s])[0, 1]:+.2f}",
+                     fontsize=10)
+        ax.set_xlabel("half A  R²", fontsize=9)
+        ax.tick_params(labelsize=8)
+    axes[0].set_ylabel("half B  R²", fontsize=9)
+    fig.tight_layout()
+    # Equal-aspect panels need the extra height, and the tight bbox keeps the
+    # titles and axis labels from being cropped at the figure edge.
+    fig.savefig(args.out, dpi=160, bbox_inches="tight"); plt.close(fig)
     _save()
     print(f"\nSaved {args.out} and {ckpt}")
 

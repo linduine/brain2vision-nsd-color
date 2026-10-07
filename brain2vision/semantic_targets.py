@@ -2,7 +2,7 @@
 semantic_targets.py
 ===================
 Build a per-image SEMANTIC feature that is colour-free by construction: the
-presence of each COCO object category (80-dim binary vector — "which objects are
+presence of each COCO object category (80-dim binary vector, "which objects are
 in this image", regardless of their colour).
 
 This is the semantic axis for the chromatic-vs-semantic variance partitioning
@@ -11,8 +11,8 @@ leak colour (CLIP sees the pixels), so residualising colour against them would
 remove the brain's chromatic signal too. COCO category presence is about *what
 is there*, not what colour it is, so it isolates semantics cleanly.
 
-(A colour-light alternative is CLIP *text* embeddings of the COCO captions — the
-clip_targets module, `--captions` — since captions rarely mention colour.)
+(A colour-light alternative is CLIP *text* embeddings of the COCO captions, the
+clip_targets module, `--captions`, since captions rarely mention colour.)
 
 Reuses the COCO-annotation loading from bboxes.py.
 

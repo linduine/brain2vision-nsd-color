@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# NSD / neural DATA — never commit. The NSD Terms of Use forbid redistributing
+# NSD / neural data: never commit. The NSD Terms of Use forbid redistributing
 # betas or masks, and these files are large and regenerable anyway.
 # ---------------------------------------------------------------------------
 data/
@@ -73,18 +73,74 @@ _convert.md
 figures/synth_*.png
 figures/*_preview.png
 
-# Manuscript builds and their tooling live outside this repo; the preprint is
-# linked instead. Keep the analysis pipeline public, keep the writing private.
+# Manuscript sources and the scripts that build them are not published; the
+# preprint is linked instead. The builders live in the repo directory so they
+# sit beside the summary .npy files they read, but they are never committed.
+# build_stats_table.py is public, since it generates a reported table.
 *.docx
 count_words.py
+build_manuscript*
+build_supplement*
 
-# Private working notes. These are drafting scaffolding and unpublished ideas,
-# not part of the reproducibility record the manuscript promises. CITATIONS_
-# VERIFIED.md and STATS_AUDIT.md are deliberately NOT here: they document that
-# the reported numbers and references were checked, which belongs in public.
+# Spin-off project with its own git repository; kept out so the two histories
+# stay independent.
+color-real-or-inferred/
+
+# Private working notes: drafting scaffolding, internal verification records
+# and unpublished ideas. Not part of the reproducibility record, which is the
+# pipeline, the summary arrays, the test suites and PROVENANCE.md.
+CITATIONS_VERIFIED.md
+STATS_AUDIT.md
+REPORT.md
 IDEAS.md
 PRIORITY_SEARCH.md
 READING_LIST.md
 CHANGES_PENDING.md
 NUMBERS_TO_UPDATE.md
 METRICS_SURVEY.md
+
+# Review correspondence and drafting material from the revision cycle.
+ANALYSIS_LOG.md
+REVIEW_BEFORE_PREPRINT.md
+CLAIMS_AUDIT.md
+CORRECTIONS_TO_APPLY.md
+CORRECTIONS_CHECKLIST.md
+COMMENTS_RG.md
+FOR_RG.md
+DIFF_vs_RG.md
+COVER_LETTER.md
+REFERENCES.md
+INDEX.md
+SfN_2026_late_breaking_abstract.md
+
+# Parked copies and superseded material.
+snapshots/
+archive/
+
+# Run logs written beside the scripts.
+*.log
+READING_predictive_coding.md
+
+# Ad-hoc revision diagnostics, kept locally.
+check_chromatic_split.py
+check_cross_subject.py
+check_hue_from_luminance.py
+check_image_averaged_r2.py
+check_luminance_infers_colour.py
+check_luminance_split.py
+check_perceptual_gain.py
+check_prf_selection.py
+check_pull_to_prior.py
+check_shared_all.py
+check_surviving_signal.py
+check_train_eval.py
+check_v4_profile.py
+score_recons.py
+show_hueless_images.py
+show_residual.py
+cross_subject.json
+image_averaged_lum.json
+image_averaged_r2.json
+image_averaged_resid.json
+image_averaged_resid80.json
+luminance_split.json

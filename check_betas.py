@@ -128,8 +128,8 @@ def main():
     print(f"\nThe study used {len(ALL_SUBJECTS)} participants. Betas files present on disk: "
           f"{len(present)} ({', '.join(f'subj{s:02d}' for s in sorted(present)) or 'none'}).")
     if missing:
-        print(f"NOT CHECKED HERE: {', '.join(f'subj{s:02d}' for s in missing)} — "
-              "files absent (they are ~2 GB each and are re-downloaded on demand).")
+        print(f"NOT CHECKED HERE: {', '.join(f'subj{s:02d}' for s in missing)}. "
+              "Files absent (they are ~2 GB each and are re-downloaded on demand).")
         print("The normalisation check below therefore covers only part of the sample.")
 
     for s in sorted(present):

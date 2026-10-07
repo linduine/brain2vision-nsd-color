@@ -2,7 +2,7 @@
 stuff_targets.py
 ================
 Build a per-image STUFF feature: the presence of each COCO-Stuff category
-(91-dim binary vector — "what amorphous background material is in this image").
+(91-dim binary vector, "what amorphous background material is in this image").
 
 Why this exists
 ---------------
@@ -19,18 +19,18 @@ cannot remove the correlations used to justify it. COCO-Stuff supplies them:
 
 Encoding is binary presence, deliberately matching the thing vector, so that the
 three residualisations differ only in *which content* is removed and not in how
-it is represented. Binary is the weaker encoding — area fraction would carry more
-information — which makes any collapse it produces a lower bound.
+it is represented. Binary is the weaker encoding, area fraction would carry more
+information, which makes any collapse it produces a lower bound.
 
 Three residualisations follow from this:
   * things only  (80-dim, the existing analysis)
   * stuff only   (91-dim, this module)
   * things+stuff (171-dim, `--combine`)
 
-Prediction worth stating before looking: if the object-bound colour signal is
-object-bound, thing-residualisation should hit higher visual cortex hardest,
+Prediction worth stating before looking: if the decodable colour signal is
+content-predictable, thing-residualisation should hit higher visual cortex hardest,
 while stuff-residualisation should hit early, retinotopic, peripherally-weighted
-cortex hardest — because backgrounds are mostly stuff, and the foreground/
+cortex hardest, because backgrounds are mostly stuff, and the foreground/
 background control already shows early cortex decodes backgrounds best
 (R² = 0.033 vs 0.018).
 

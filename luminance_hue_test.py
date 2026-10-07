@@ -9,14 +9,14 @@ The question
 If a reconstruction predicts "red jacket" from semantics but the brain-decoded
 luminance is inconsistent with red, that disagreement could flag an atypically
 coloured object. That requires luminance to carry hue information *for a given
-object* — a red car versus a blue car — which is the comparison this script makes.
+object*, a red car versus a blue car, which is the comparison this script makes.
 
 What the previous version got wrong
 -----------------------------------
 It compared luminance across objects of DIFFERENT categories: a blue car against
 a green tree against a brown table. Hue was then confounded with object identity
-and with scene context — blue things sit in bright outdoor scenes, brown things
-indoors — so "blue objects are bright" came out, which is a fact about skies, not
+and with scene context, blue things sit in bright outdoor scenes, brown things
+indoors, so "blue objects are bright" came out, which is a fact about skies, not
 about blue. That is the same content–colour confound the manuscript is about,
 reappearing inside the control analysis.
 

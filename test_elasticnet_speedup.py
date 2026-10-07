@@ -11,7 +11,7 @@ within the solver's own tolerance. This asserts that on real data instead of
 taking it on faith.
 
 The comparison is exact in the sense that matters: the same participant, the
-same target, the same voxel-matching seed, the same alpha grid — only the solver
+same target, the same voxel-matching seed, the same alpha grid, only the solver
 configuration differs.
 
 Run (needs the betas for the chosen participant):
@@ -63,7 +63,7 @@ def main():
                          f"available: {sorted(by)}")
     k = ref["k"]
     print("=" * 74)
-    print(f"ELASTIC-NET SOLVER A/B — subj{args.subj:02d}, k={k}, "
+    print(f"ELASTIC-NET SOLVER A/B, subj{args.subj:02d}, k={k}, "
           f"{args.n_draws} draws")
     print(f"reference: {REF} (computed with n_jobs=1, cyclic selection)")
     print("=" * 74)
@@ -83,8 +83,8 @@ def main():
         del X, y, te
 
     print("\n" + "=" * 74)
-    print("PASS — solver change is numerically inert" if ok else
-          "FAIL — the fitted solution moved; do not adopt these settings")
+    print("PASS, solver change is numerically inert" if ok else
+          "FAIL, the fitted solution moved; do not adopt these settings")
     print("Tolerance for 'inert' is |Δ| < 0.002, an order of magnitude below the")
     print("smallest effect the paper reports (+0.006).")
     print("=" * 74)

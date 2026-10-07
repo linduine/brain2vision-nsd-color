@@ -3,7 +3,7 @@ semantic_residual.py
 ====================
 Chromatic-vs-semantic variance partitioning, step 1: remove from the colour
 target the part that is predictable from image semantics, leaving the *residual
-colour* — the chromatic variation orthogonal to which objects are present.
+colour*, the chromatic variation orthogonal to which objects are present.
 
 Method
 ------
@@ -59,7 +59,7 @@ def _target_labels(target_npy, n_cols, labels=None):
 
     This module is not colour-specific: it residualises whatever target it is
     given, including the luminance (brightness-bin) target. Labelling brightness
-    bins "red, orange, yellow …" — which it used to do unconditionally — produces
+    bins "red, orange, yellow …", which it used to do unconditionally, produces
     output that is numerically right and verbally wrong, so the names are now
     derived from the target rather than assumed.
     """

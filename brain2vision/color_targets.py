@@ -8,16 +8,55 @@ basic color categories (Berlin & Kay):
 
     red, orange, yellow, green, blue, purple, pink, brown, black, white, gray
 
-Each image -> an 11-dim vector that sums to 1 (a soft label over colors). This
-is what the V4 decoder predicts. It's more informative than a single dominant
-color and stays fully interpretable ("30% green, 20% blue, ...").
+Each image -> an 11-dim vector that sums to 1 (a soft label over colors). It is
+more informative than a single dominant color and stays fully interpretable
+("30% green, 20% blue, ...").
+
+This is the PHYSICAL target. Its companion is the PERCEPTUAL target built by
+perceptual_color_targets.py from the van de Weijer et al. (2009) colour-naming
+model. Both are reported in the manuscript, share column order, and are
+interchangeable at decode time. This file is not superseded by that one; the two
+answer different questions.
 
 Method
 ------
 Pixels are converted RGB->HSV (vectorized, numpy only) and assigned to a color
-bin by simple, transparent rules on hue/saturation/value. Approximate but good
-enough for a first experiment; swap in a Lab nearest-reference scheme later if
-you want perceptual accuracy.
+bin by transparent rules on hue/saturation/value. The rules are a geometric
+partition of HSV, not a model of naming.
+
+Two properties of that partition are load bearing and must not be rediscovered
+later as surprises.
+
+1. BLACK IS A LUMINANCE STATISTIC, NOT A COLOUR.
+   The first rule is `idx[v < 0.2] = black`, applied before any saturation test.
+   Any pixel below 20% value becomes black no matter how chromatic it is -- a
+   deep red, a dark navy, a shadowed green. Grey and white, by contrast, both
+   require `s < 0.15`, so they are genuine low-chroma judgements.
+
+   The consequence is measurable. Black holds 16.0% of pixel mass, and its
+   decoding profile is that of a brightness measure rather than a colour:
+   R2 = +0.080 in early visual cortex, +0.001 at V4, +0.027 in higher visual
+   cortex, and across participants it correlates with the separate luminance
+   target at r = 0.99 / 0.94 / 0.99 -- the highest of all eleven terms.
+
+   So statements of the form "early visual cortex leads on the achromatic terms"
+   are partly a restatement of the luminance result, because the largest
+   achromatic term IS a luminance threshold. The luminance-target analysis is
+   what keeps that from being circular.
+
+2. THE PURPLE BIN IS NEARLY EMPTY.
+   Purple occupies hue 260-300, a 40-degree band against 100 for green and 90
+   for blue, and purple is rare in natural scenes. It receives 0.38% of pixel
+   mass and 0.2% of total target variance, against ~19% each for grey and blue
+   -- a 115:1 ratio. Its R2 is around -0.07 in every region because a
+   near-constant column cannot be predicted.
+
+   This is why the manuscript pools per-colour R2 by variance rather than
+   uniformly. Uniform pooling understates colour decoding by ~0.021 in every
+   region. Do not report a uniform mean over these eleven bins without saying so.
+
+Neither property is a defect to be fixed silently. Changing the thresholds would
+change every published number in the manuscript.
 
 Usage
 -----

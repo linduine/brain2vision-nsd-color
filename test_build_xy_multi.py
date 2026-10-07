@@ -6,7 +6,7 @@ Verify that build_xy_multi returns exactly what per-ROI build_xy returned.
 The refactor exists only to stop re-reading the same bytes three times per
 participant. It must therefore be a pure performance change: same rows, same
 columns, same order, same values. This asserts that element-wise, for one
-participant, across all three ROIs — the same comparison the eventual results
+participant, across all three ROIs, the same comparison the eventual results
 depend on.
 
 Run (needs the betas file for the chosen participant):
@@ -36,7 +36,7 @@ def main():
     args = ap.parse_args()
 
     print("=" * 70)
-    print(f"build_xy_multi EQUIVALENCE CHECK (--load-once path) — subj{args.subj:02d}")
+    print(f"build_xy_multi EQUIVALENCE CHECK (--load-once path): subj{args.subj:02d}")
     print("=" * 70)
 
     print("\n-- old path: build_xy once per ROI --")

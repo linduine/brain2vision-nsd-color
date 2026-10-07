@@ -66,7 +66,7 @@ def main():
 
     col, cid = load("color_targets"), load("color_targets_ids")
     if col is None:
-        print("\n  data/color_targets.npy not found — nothing to check.")
+        print("\n  data/color_targets.npy not found, nothing to check.")
         sys.exit(1)
 
     # ---------------------------------------------------------------- 1

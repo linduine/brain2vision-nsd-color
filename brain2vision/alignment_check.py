@@ -63,15 +63,15 @@ def main():
     print(f"SHUFFLED null: R2 = {null_r2.mean():+.4f} +/- {null_r2.std():.4f}   "
           f"top1 = {null_top1.mean():.3f} +/- {null_top1.std():.3f}   (n={args.n_perm})")
     print(f"permutation p-value (R2): {p_r2:.3f}")
-    print("(note: shuffled top1 reflects the modal-color base rate, not 1/11 — "
+    print("(note: shuffled top1 reflects the modal-color base rate, not 1/11, "
           "R2 is the clean falsification metric)")
 
     ok = real_r2 > null_r2.mean() + 3 * null_r2.std() and real_r2 > 0.005
     if ok:
-        print("VERDICT: PASS — true decoding is well above the shuffled null, so "
+        print("VERDICT: PASS, true decoding is well above the shuffled null, so "
               "the betas<->image alignment carries real signal.")
     else:
-        print("VERDICT: CHECK — true decoding is NOT clearly above the null; "
+        print("VERDICT: CHECK, true decoding is NOT clearly above the null; "
               "re-examine IMG_COL / BETAS_COL in color_decode.py.")
 
 
