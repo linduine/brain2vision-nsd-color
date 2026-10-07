@@ -608,6 +608,6 @@ Python 3.10 · scikit-learn 1.9 · NumPy 2.5 · SciPy 1.18 · nibabel 5.4 ·
 h5py 3.16 · Matplotlib 3.11
 
 Data: NSD via the MindEye2 release (`pscotti/mindeyev2`) for the main analyses;
-raw NSD (AWS `natural-scenes-dataset`, OpenNeuro ds004496) for NSD-synthetic and
+raw NSD (AWS `natural-scenes-dataset`) for NSD-synthetic and
 ncsnr; COCO annotations for object targets. Per the NSD Terms of Use, raw betas
 and masks are **not** redistributed here.

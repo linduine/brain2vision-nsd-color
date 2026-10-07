@@ -21,7 +21,7 @@ the on-disk file is nsdgeneral-sized.
 
 If you want to download ONLY an ROI's voxels (never the full nsdgeneral blob),
 that is not possible from this preprocessed repo; you would need the raw NSD
-volumetric betas (AWS S3 bucket "natural-scenes-dataset" / OpenNeuro ds004496)
+volumetric betas (AWS S3 bucket "natural-scenes-dataset")
 plus the ROI NIfTI masks in nsddata/ppdata/subjXX/func1pt8mm/roi/, and mask the
 volume yourself. Heavier download, full flexibility. See notes in README.
 

@@ -126,8 +126,8 @@ in NumPy, robust across environments.
 The preprocessed repo ships only the **full nsdgeneral** betas per subject
 (~1.2–1.9 GB each). You download that one file and keep only the ROI voxels, so
 you avoid downloading all subjects, but the file you fetch is nsdgeneral-sized.
-To download *only* an ROI's voxels, use raw NSD (`natural-scenes-dataset` S3 /
-OpenNeuro `ds004496`) with the ROI NIfTI masks in
+To download *only* an ROI's voxels, use raw NSD (`natural-scenes-dataset` S3)
+with the ROI NIfTI masks in
 `nsddata/ppdata/subjXX/func1pt8mm/roi/`, arbitrary ROIs, at the cost of
 downloading full volumetric betas. Never redistribute NSD betas or COCO images;
 ship code + a download step and have users accept the terms.
