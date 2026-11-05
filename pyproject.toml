@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "brain2vision-nsd"
-version = "0.1.0"
+version = "1.0.0"
 description = "ROI-selective NSD brain-to-vision utilities and color-decoding experiments"
 readme = "README.md"
 requires-python = ">=3.9"

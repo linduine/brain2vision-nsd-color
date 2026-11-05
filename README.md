@@ -58,8 +58,8 @@ New modules: `reliability` (split-half), `ncsnr_quality` (signal quality),
 `fg_bg_color_targets` (attention), `synthetic_decode` (isoluminant),
 `perceptual_color_targets` (color naming).
 
-A preprint, *"Is color in the human visual cortex chromatic or content-predictable? A confound-controlled decoding study of the Natural Scenes Dataset"*, is in
-preparation.
+A preprint, *"Is color in the human visual cortex chromatic or content-predictable? A confound-controlled decoding study of the Natural Scenes Dataset"*, is
+available on Zenodo: [10.5281/zenodo.23973001](https://doi.org/10.5281/zenodo.23973001).
 
 > **Verifying the code?** Run `python test_analysis.py` (26 checks: plant a known signal,
 > confirm the code recovers it; plant a known null, confirm it doesn't) and
@@ -169,5 +169,11 @@ Full method notes, ROI structure, alignment caveats, and extension ideas are in
 
 ## Citation
 
-If you use this, please cite NSD (Allen et al., 2022), COCO (Lin et al., 2014),
+If you use this, please cite the preprint:
+
+> Selezneva N, Goel R (2026) *Is color in the human visual cortex chromatic or
+> content-predictable? A confound-controlled decoding study of the Natural Scenes
+> Dataset.* Zenodo. https://doi.org/10.5281/zenodo.23973001
+
+and also NSD (Allen et al., 2022), COCO (Lin et al., 2014),
 and MindEye2 (Scotti et al., 2024).
